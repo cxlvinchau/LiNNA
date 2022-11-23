@@ -3,8 +3,6 @@ import os
 from torch import nn
 import numpy as np
 
-from nn_abstraction.deep_abstract.models import Keras_Model
-
 
 def get_accuracy(loader, model, size=None):
     correct = 0

@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional
+from typing import Optional, List
 
 import torch
 from torch import nn
@@ -32,6 +32,11 @@ class Network:
         # Underlying sequential PyTorch model
         self.torch_model = torch_model
         self.original_torch_model = copy.deepcopy(torch_model)
+        # Obtain the layers from the torch model
+        self.layers = []
+        for layer_idx in range(0, len(torch_model), 2):
+            assert isinstance(torch_model[layer_idx], nn.Linear), "Expected linear layer"
+            self.layers.append(NetworkLayer(torch_model=torch_model, layer_idx=layer_idx))
 
     def forward(self, X: torch.Tensor, layer_idx: Optional[int] = None, grad: bool = False):
         """
@@ -71,6 +76,80 @@ class Network:
         _, predicted = torch.max(self.forward(X), 1)
         return predicted
 
+    def delete_neuron(self, layer_idx: int, neuron: int):
+        """
+        Removes a neuron from a given layer
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer in which neuron should be deleted
+        neuron: int
+            Neuron to be deleted
+
+        """
+        self.layers[layer_idx].delete_output(neuron)
+        if layer_idx < len(self.layers) - 1:
+            self.layers[layer_idx+1].delete_input(neuron)
+
+    def restore_neuron(self, layer_idx: int, neuron: int):
+        """
+        Restores the neuron in the given layer
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer in which neuron should be restored
+        neuron: int
+            Neuron to be restored
+
+        Returns
+        -------
+
+        """
+        self.layers[layer_idx + 1].restore_weights(neuron)
+        self.layers[layer_idx + 1].restore_input(neuron)
+        self.layers[layer_idx].restore_neuron(neuron)
+
+    def set_basis(self, layer_idx: int, basis: List[int]):
+        """
+        Sets the basis for the specific layer. Note that due to
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer
+        basis: List[int]
+            List of basis neurons
+
+        """
+        if layer_idx < len(self.layers) - 1:
+            if self.layers[layer_idx].basis is None and self.layers[layer_idx + 1].input_basis is None:
+                self.layers[layer_idx].basis = basis
+                self.layers[layer_idx + 1].input_basis = basis
+            else:
+                raise ValueError("Basis already set")
+        else:
+            raise ValueError("The last layer cannot have a basis")
+
+    def readjust_weights(self, layer_idx: int, neuron: int, coef: torch.Tensor):
+        """
+        Readjust the outgoing weights for the neuron in the given layer. Effectively, the weight matrix
+        of ``layer_idx + 1`` is modified.
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer whose outgoing weights are adjusted
+        neuron: int
+            Neuron whose weight is adjusted
+        coef: torch.Tensor
+            Linear coefficients
+
+        """
+        assert layer_idx + 1 < len(self.layers)
+        self.layers[layer_idx+1].readjust_weights(neuron=neuron, coef=coef)
+
 
 class NetworkLayer:
 
@@ -97,8 +176,12 @@ class NetworkLayer:
         self.active_inputs = list(range(self.original_weight.shape[1]))
 
         # Store linear combinations (note that this is done for the input)
-        self.lin_comb = dict()
+        self.neuron_to_coef = dict()
+
+        # Store basis of previous layer
+        self.input_basis = None
         self.basis = None
+
         self.removed_neurons = []
         self.change_matrix = torch.zeros(self.original_weight.shape)
 
@@ -112,7 +195,7 @@ class NetworkLayer:
             Weight of the layer
 
         """
-        return self.torch_model[self.idx].weight
+        return self.torch_model[self.layer_idx].weight
 
     def get_bias(self):
         """
@@ -124,7 +207,7 @@ class NetworkLayer:
             Return bias of layer
 
         """
-        return self.torch_model[self.idx].bias
+        return self.torch_model[self.layer_idx].bias
 
     def set_weight(self, weight: torch.Tensor):
         """
@@ -171,7 +254,7 @@ class NetworkLayer:
         if isinstance(input_neuron, int):
             return self.active_inputs.index(input)
         if isinstance(input_neuron, list):
-            return [self.active_inputs.index(i) for i in input]
+            return [self.active_inputs.index(i) for i in input_neuron]
         raise ValueError("input has wrong type")
 
     def get_input_weight(self, neuron: int):
@@ -205,8 +288,8 @@ class NetworkLayer:
         with torch.no_grad():
             mask = [i for i in range(len(self.active_neurons)) if self.active_neurons[i] != neuron]
             self.active_neurons.remove(neuron)
-            self.torch_model[self.idx].weight = nn.Parameter(self.get_weight()[mask, :])
-            self.torch_model[self.idx].bias = nn.Parameter(self.get_bias()[mask])
+            self.torch_model[self.layer_idx].weight = nn.Parameter(self.get_weight()[mask, :])
+            self.torch_model[self.layer_idx].bias = nn.Parameter(self.get_bias()[mask])
             self.removed_neurons.append(neuron)
 
     def delete_input(self, neuron: int):
@@ -222,5 +305,112 @@ class NetworkLayer:
         with torch.no_grad():
             mask = [i for i in range(len(self.active_inputs)) if self.active_inputs[i] != neuron]
             self.active_inputs.remove(neuron)
-            self.torch_model[self.idx].weight = nn.Parameter(self.get_weight()[:, mask])
+            self.torch_model[self.layer_idx].weight = nn.Parameter(self.get_weight()[:, mask])
 
+    def get_neuron_index(self, neuron: int):
+        """
+        Return the index of the neuron
+
+        Parameters
+        ----------
+        neuron: int
+            Neuron
+
+        Returns
+        -------
+        int
+            Index of the neuron
+
+        """
+        if isinstance(neuron, int):
+            return self.active_neurons.index(neuron)
+        if isinstance(neuron, list):
+            return [self.active_neurons.index(i) for i in neuron]
+        raise ValueError("neuron has wrong type")
+
+    def readjust_weights(self, neuron: int, coef: torch.Tensor):
+        """
+        Readjust
+
+        Parameters
+        ----------
+        neuron: int
+            Neuron
+        coef: torch.Tensor
+            A tensor containing coefficients of linear combination
+
+        """
+        self.neuron_to_coef[neuron] = coef
+        with torch.no_grad():
+            diag = torch.diag(self.original_weight[:, neuron])
+            mat = torch.tensor(coef).repeat(diag.shape[1], 1)
+            weight = self.get_weight()
+            idxs = self._get_input_index(self.input_basis)
+            change = torch.matmul(diag.float(), mat.float()).float()
+            weight[:, idxs] = weight[:, idxs].float() + change[self.active_neurons, :]
+            self.change_matrix[:, idxs] = self.change_matrix[:, idxs].float() + change
+
+    def restore_neuron(self, neuron: int):
+        """
+        Restores a given neuron
+
+        Parameters
+        ----------
+        neuron: int
+            Neuron to be restored
+
+        """
+        with torch.no_grad():
+            weight = self.get_weight()
+            row = self.original_weight[neuron, self.active_inputs].unsqueeze(0)
+            if self.input_basis:
+                idxs = self._get_input_index(self.input_basis)
+                # Apply changes to linear combinations
+                row[:, idxs] = row[:, idxs] + self.change_matrix[neuron, idxs]
+            self.set_weight(torch.cat((weight, row), 0))
+            bias = self.original_bias[neuron]
+            self.set_bias(torch.cat((self.get_bias(), bias.unsqueeze(0))))
+            self.active_neurons.append(neuron)
+            self.removed_neurons.remove(neuron)
+
+    def restore_input(self, neuron):
+        """
+        Restores an input neuron to the layer
+
+        Parameters
+        ----------
+        neuron: int
+            Input neuron
+
+        """
+        if neuron in self.active_inputs:
+            raise ValueError("Neuron cannot be restored because it is active")
+        col = self.original_weight[self.active_neurons, neuron].unsqueeze(1)
+        weight = self.get_weight()
+        self.set_weight(torch.cat((weight, col), 1))
+        self.active_inputs.append(neuron)
+
+    def restore_weights(self, neuron):
+        """
+        Restores the weights of the layer w.r.t a previously removed neuron
+
+        Parameters
+        ----------
+        neuron: int
+            Neuron whose weights should be restored
+
+        Returns
+        -------
+
+        """
+        if neuron in self.active_inputs:
+            raise ValueError("Neuron cannot be restored because it is active")
+        coef = self.neuron_to_coef[neuron]
+        with torch.no_grad():
+            diag = torch.diag(self.original_weight[:, neuron])
+            mat = torch.tensor(coef).repeat(diag.shape[1], 1)
+            weight = self.get_weight()
+            idxs = self._get_input_index(self.input_basis)
+            change = torch.matmul(diag.float(), mat.float()).float()
+            self.change_matrix[:, idxs] = self.change_matrix[:, idxs] - change
+            weight[:, idxs] = weight[:, idxs].float() - change[self.active_neurons]
