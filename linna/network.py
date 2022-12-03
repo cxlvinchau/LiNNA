@@ -150,6 +150,39 @@ class Network:
         assert layer_idx + 1 < len(self.layers)
         self.layers[layer_idx+1].readjust_weights(neuron=neuron, coef=coef)
 
+    def get_io_matrix(self, layer_idx: int, loader, size=1000):
+        """
+        Computes the IO matrix for the given layer
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer for which IO matrix should be computed
+        loader: DataLoader
+        size: int
+            Number of images to be considered
+
+        Returns
+        -------
+        torch.Tensor
+            IO matrix
+
+        """
+        outputs = []
+        counter = 0
+        with torch.no_grad():
+            for idx, (images, labels) in enumerate(loader):
+                status = False
+                for image in images:
+                    counter += 1
+                    if size and counter > size:
+                        status = True
+                        break
+                    outputs.append(self.forward(image.view(1, -1), layer_idx=int(layer_idx)).view(-1))
+                if status:
+                    break
+        return torch.stack(outputs).cpu().detach().numpy()
+
 
 class NetworkLayer:
 
@@ -343,7 +376,7 @@ class NetworkLayer:
         self.neuron_to_coef[neuron] = coef
         with torch.no_grad():
             diag = torch.diag(self.original_weight[:, neuron])
-            mat = torch.tensor(coef).repeat(diag.shape[1], 1)
+            mat = torch.tensor(coef.clone().detach()).repeat(diag.shape[1], 1)
             weight = self.get_weight()
             idxs = self._get_input_index(self.input_basis)
             change = torch.matmul(diag.float(), mat.float()).float()

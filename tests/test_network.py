@@ -54,8 +54,12 @@ class TestNetwork(unittest.TestCase):
     def test_replace(self):
         self.network.delete_neuron(layer_idx=0, neuron=1)
         self.network.set_basis(layer_idx=0, basis=[0, 2])
-        self.network.readjust_weights(layer_idx=0, neuron=0, coef=torch.Tensor([1, 1]))
-        print(self.network.layers[1].get_weight())
+        self.network.readjust_weights(layer_idx=0, neuron=1, coef=torch.Tensor([1, 2]))
+        assert torch.all(torch.eq(self.network.layers[1].get_weight(), torch.tensor([[1., 0.], [1., 2.], [0., 1.]])))
+
+    def test_get_io_matrix(self):
+        io_matrix = self.network.get_io_matrix(1, loader=[[torch.tensor([[1., 0.], [2., -1.]]), [0, 1]]], size=2)
+        assert torch.all(torch.eq(torch.tensor(io_matrix), torch.tensor([[3., 4., 7.], [2., 4., 7.]])))
 
 
 if __name__ == '__main__':

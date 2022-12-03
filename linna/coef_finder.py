@@ -64,8 +64,6 @@ class L1CoefFinder(CoefFinder):
                 neg_slack = grb_model.addMVar(io_matrix.shape[0], lb=0, name="neg_slack")
                 target = self.io_matrix[layer_idx][:, neuron]
                 # Add linear combination constraint
-                print(io_matrix.shape)
-                print(io_vars)
                 lin_expr = (io_matrix @ io_vars) - (identity(io_matrix.shape[0]) @ pos_slack) + (
                         identity(io_matrix.shape[0]) @ neg_slack)
                 grb_model.addConstr(lin_expr == target)
