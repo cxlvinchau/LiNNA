@@ -13,7 +13,7 @@ Experimental Results
 
 Authors
 -------
-*LiNNA* is developed and maintained by [Calvin Chau](), [Jan Křetı́nský]() and [Stefanie Mohr]()
+*LiNNA* is developed and maintained by [Calvin Chau](https://cxlvinchau.github.io/), [Jan Křetı́nský](https://www7.in.tum.de/~kretinsk/) and [Stefanie Mohr](https://www7.in.tum.de/~mohr/)
 at the [Technical University of Munich](https://www.in.tum.de/en/in/cover-page/).
 
 Publications
