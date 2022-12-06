@@ -4,30 +4,15 @@ import torch
 from torch import nn
 
 from linna.network import Network
+from tests.toy_network import create_toy_network
 
 
 class TestNetwork(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.sequential = nn.Sequential(
-            nn.Linear(2, 3),
-            nn.ReLU(),
-            nn.Linear(3, 3),
-            nn.ReLU(),
-            nn.Linear(3, 3)
-        )
-
-        # Set weights
-        with torch.no_grad():
-            self.sequential[0].weight = nn.Parameter(torch.Tensor([[1, 2], [1, 1], [3, 3]]))
-            self.sequential[0].bias = nn.Parameter(torch.Tensor([1, 2, 3]))
-            self.sequential[2].weight = nn.Parameter(torch.Tensor([[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
-            self.sequential[2].bias = nn.Parameter(torch.ones(3))
-            self.sequential[4].weight = nn.Parameter(torch.ones((3, 3)))
-            self.sequential[4].bias = nn.Parameter(2 * torch.ones(3))
-
         # Wrap PyTorch model
-        self.network = Network(torch_model=self.sequential)
+        self.network = create_toy_network()
+        self.sequential = self.network.torch_model
 
     def test_init_network(self):
         assert len(self.network.layers) == 3, "Wrong numbers of layers"
@@ -55,11 +40,11 @@ class TestNetwork(unittest.TestCase):
         self.network.delete_neuron(layer_idx=0, neuron=1)
         self.network.set_basis(layer_idx=0, basis=[0, 2])
         self.network.readjust_weights(layer_idx=0, neuron=1, coef=torch.Tensor([1, 2]))
-        assert torch.all(torch.eq(self.network.layers[1].get_weight(), torch.tensor([[1., 0.], [1., 2.], [0., 1.]])))
+        assert torch.all(torch.isclose(self.network.layers[1].get_weight(), torch.tensor([[1., 0.], [1., 2.], [0., 1.]])))
 
     def test_get_io_matrix(self):
         io_matrix = self.network.get_io_matrix(1, loader=[[torch.tensor([[1., 0.], [2., -1.]]), [0, 1]]], size=2)
-        assert torch.all(torch.eq(torch.tensor(io_matrix), torch.tensor([[3., 4., 7.], [2., 4., 7.]])))
+        assert torch.all(torch.isclose(torch.tensor(io_matrix), torch.tensor([[3., 4., 7.], [2., 4., 7.]])))
 
 
 if __name__ == '__main__':

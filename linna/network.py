@@ -150,7 +150,7 @@ class Network:
         assert layer_idx + 1 < len(self.layers)
         self.layers[layer_idx+1].readjust_weights(neuron=neuron, coef=coef)
 
-    def get_io_matrix(self, layer_idx: int, loader, size=1000):
+    def get_io_matrix(self, layer_idx: int, loader, size=1000) -> np.ndarray:
         """
         Computes the IO matrix for the given layer
 
