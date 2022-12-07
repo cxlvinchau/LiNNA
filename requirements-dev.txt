@@ -35,9 +35,9 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 tomli==2.0.1
-torch==1.8.1
-torchaudio==0.8.1
-torchvision==0.9.1
+torch
+torchaudio
+torchvision
 typing_extensions==4.4.0
 urllib3==1.26.13
 zipp==3.11.0
