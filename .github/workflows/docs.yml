@@ -1,6 +1,6 @@
-name: Documentation
+name: Docs
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -11,29 +11,31 @@ on:
 jobs:
   docs:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8"]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v1
     - name: Install dependencies
       run: |
         pip install -r requirements-dev.txt
-        
+
     - name: Build documentation
       run: |
         cd docs
         make clean html
 
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        path: gh-pages
-
-    - run: cp -r docs/_build/html/* gh-pages/
-    - run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
+    - name: Commit documentation changes
+      run: |
+        git clone https://github.com/cxlvinchau/LiNNA.git --branch gh-pages --single-branch gh-pages
+        cp -r docs/_build/html/* gh-pages/
+        cd gh-pages
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
         git add .
-        git commit -m "Updated docs"
-        git push
+        git commit -m "Update documentation" -a || true
+        # The above command will fail if no changes were present, so we ignore
+        # the return code.
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        branch: gh-pages
+        directory: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
