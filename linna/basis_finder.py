@@ -10,7 +10,7 @@ from linna.network import Network
 class BasisFinder(abc.ABC):
     """Basis finder base class"""
 
-    def __init__(self, network: Network, io_dict: Dict[int, np.ndarray], **parameters):
+    def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None, **parameters):
         self.network = network
         self.parameters = parameters
         self.io_dict = io_dict

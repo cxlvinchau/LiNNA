@@ -13,7 +13,7 @@ import numpy as np
 class CoefFinder(abc.ABC):
     """Reduction base class"""
 
-    def __init__(self, network: Network, io_dict: Dict[int, np.ndarray]):
+    def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None):
         self.network = network
         self.io_dict = io_dict
 
