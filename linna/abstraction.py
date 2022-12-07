@@ -56,7 +56,22 @@ class Abstraction:
         else:
             raise ValueError(f"Invalid coef finder {str(coef_finder)}")
 
-    def remove_neurons(self, layer_idx: int):
+    def determine_basis(self, layer_idx: int, basis_size: int = 1000):
+        """
+        Determines the basis for the given layer
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer
+        basis_size: int
+            Size of the basis
+
+        """
+        basis = self.basis_finder.find_basis(layer_idx=layer_idx, basis_size=basis_size)
+        self.network.set_basis(layer_idx, basis)
+
+    def abstract(self, layer_idx: int):
         """
         Removes all neurons in a layer that are not in the basis
 
@@ -65,6 +80,16 @@ class Abstraction:
         layer_idx: int
             Layer in which neurons are removed
 
-        -------
-
         """
+        basis = self.network.layers[layer_idx].basis
+        neurons = [i for i in self.network.layers[layer_idx].active_neurons if i not in basis]
+        for neuron in neurons:
+            self.remove_neuron(layer_idx=layer_idx, neuron=neuron)
+
+    def remove_neuron(self, layer_idx: int, neuron: int):
+        self.network.delete_neuron(layer_idx=layer_idx, neuron=neuron)
+        coef = self.coef_finder.find_coefficients(layer_idx=layer_idx, neuron=neuron)
+        self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=coef)
+
+    def refine(self, layer_idx: int):
+        pass
