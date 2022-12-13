@@ -1,9 +1,12 @@
 LiNNA
 =====
-*LiNNA* is a Python library for abstracting feed-fordward
-neural networks to accelerate their formal verification.
+**LiNNA (*Linear Neural Network Abstraction*)** is a Python library for abstracting feed-fordward
+neural networks. The abstraction can then be used to speed up verification or
+to gain insights about redundancies in the network.
 The idea is to replace neurons by a linear combination of neurons
 and thereby replace the overall size of the network.
+
+For more information, we refer to the [LiNNA website]().
 
 Usage
 -----

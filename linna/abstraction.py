@@ -1,9 +1,10 @@
-from typing import Literal
+from typing import Literal, Dict, Any, Optional
 
 import numpy as np
+import torch
 
-from linna.basis_finder import BasisFinder, GreedyBasisFinder, VarianceBasisFinder
-from linna.coef_finder import CoefFinder, L1CoefFinder, L2CoefFinder
+from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder
+from linna.coef_finder import L1CoefFinder, L2CoefFinder
 from linna.network import Network
 
 from torch.utils.data.dataloader import DataLoader
@@ -15,7 +16,7 @@ COEF_FINDER = Literal["l1", "l2"]
 class Abstraction:
 
     def __init__(self, network: Network, basis_finder: BASIS_FINDER, coef_finder: COEF_FINDER, loader: DataLoader,
-                 size: int = 1000):
+                 size: int = 1000, coef_params: Optional[Dict[str, Any]] = None):
         """
         Initializes the abstraction object
 
@@ -31,9 +32,12 @@ class Abstraction:
             The data loader for the data that is used for computing the IO matrices
         size: int
             The size of the IO matrices, i.e. the number of considered inputs
+        coef_params: Optional[Dict[str, Any]]
+            Optional parameters given to the coefficient finder, e.g. for specifying the LP solver
 
         """
         self.network = network
+        self.original_number_of_neurons = self.network.get_num_neurons()
         self.io_dict = dict()
 
         # Compute IO matrices
@@ -50,11 +54,14 @@ class Abstraction:
 
         # Initialize coef finder
         if coef_finder == "l1":
-            self.coef_finder = L1CoefFinder(network=network, io_dict=self.io_dict)
+            self.coef_finder = L1CoefFinder(network=network, io_dict=self.io_dict, params={"solver": "scipy"})
         elif coef_finder == "l2":
             self.coef_finder = L2CoefFinder(network=network, io_dict=self.io_dict)
         else:
             raise ValueError(f"Invalid coef finder {str(coef_finder)}")
+
+    def get_reduction_rate(self):
+        return 1 - (self.network.get_num_neurons()/self.original_number_of_neurons)
 
     def determine_basis(self, layer_idx: int, basis_size: int = 1000):
         """
@@ -71,7 +78,7 @@ class Abstraction:
         basis = self.basis_finder.find_basis(layer_idx=layer_idx, basis_size=basis_size)
         self.network.set_basis(layer_idx, basis)
 
-    def abstract(self, layer_idx: int):
+    def abstract(self, layer_idx: int, **coef_params):
         """
         Removes all neurons in a layer that are not in the basis
 
@@ -82,14 +89,22 @@ class Abstraction:
 
         """
         basis = self.network.layers[layer_idx].basis
-        neurons = [i for i in self.network.layers[layer_idx].active_neurons if i not in basis]
-        for neuron in neurons:
-            self.remove_neuron(layer_idx=layer_idx, neuron=neuron)
+        if basis is None:
+            raise ValueError(f"Basis has not been determined for {layer_idx} yet")
+        non_basic = [i for i in self.network.layers[layer_idx].active_neurons if i not in basis]
+        coefs = self.coef_finder.find_coefficients_layer(layer_idx=layer_idx, **coef_params)
+        for neuron in non_basic:
+            self.network.delete_neuron(layer_idx=layer_idx, neuron=neuron)
+            self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=coefs[neuron])
 
-    def remove_neuron(self, layer_idx: int, neuron: int):
-        self.network.delete_neuron(layer_idx=layer_idx, neuron=neuron)
-        coef = self.coef_finder.find_coefficients(layer_idx=layer_idx, neuron=neuron)
-        self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=coef)
+    def refine(self, cex: torch.Tensor):
+        """
+        Refine the abstraction such that the classification of the given counterexample coincides with the
+        classification of the original network
 
-    def refine(self, layer_idx: int):
+        Parameters
+        ----------
+        cex: torch.Tensor
+
+        """
         pass

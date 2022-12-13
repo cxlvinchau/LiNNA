@@ -7,7 +7,7 @@ import torch
 from linna.network import Network
 
 
-class BasisFinder(abc.ABC):
+class _BasisFinder(abc.ABC):
     """Basis finder base class"""
 
     def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None, **parameters):
@@ -36,7 +36,7 @@ class BasisFinder(abc.ABC):
         pass
 
 
-class VarianceBasisFinder(BasisFinder):
+class VarianceBasisFinder(_BasisFinder):
 
     def find_basis(self, layer_idx: int, basis_size: int, **parameters) -> List[int]:
         io_matrix: np.ndarray = self.io_dict[layer_idx]
@@ -45,7 +45,7 @@ class VarianceBasisFinder(BasisFinder):
         return basis.tolist()
 
 
-class GreedyBasisFinder(BasisFinder):
+class GreedyBasisFinder(_BasisFinder):
 
     def find_basis(self, layer_idx: int, basis_size: int, random_choice=False, **parameters) -> List[int]:
         io_matrix: np.ndarray = self.io_dict[layer_idx]

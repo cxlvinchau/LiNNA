@@ -11,7 +11,7 @@ from linna import utils
 
 class Network:
     """
-    Wraps a sequential PyTorch model. In our context, a layer consists of linear layer and a non-linear function.
+    Wraps a sequential PyTorch model. A layer consists of linear layer and possibly a non-linear function.
     Suppose a sequential PyTorch model with 6 layers has the following structure:
 
     nn.Linear, nn.ReLU, nn.Linear, nn.ReLU, nn.Linear, nn.Softmax
@@ -30,13 +30,31 @@ class Network:
             raise TypeError("torch_model needs to be an instance of nn.Sequential")
 
         # Underlying sequential PyTorch model
-        self.torch_model = torch_model
+        self.torch_model = copy.deepcopy(torch_model)
         self.original_torch_model = copy.deepcopy(torch_model)
         # Obtain the layers from the torch model
         self.layers = []
         for layer_idx in range(0, len(torch_model), 2):
             assert isinstance(torch_model[layer_idx], nn.Linear), "Expected linear layer"
-            self.layers.append(NetworkLayer(torch_model=torch_model, layer_idx=layer_idx))
+            self.layers.append(NetworkLayer(torch_model=self.torch_model, layer_idx=layer_idx))
+
+    def reset(self):
+        self.torch_model = copy.deepcopy(self.original_torch_model)
+        for layer in self.layers:
+            layer.reset()
+            layer.torch_model = self.torch_model
+
+    def get_num_neurons(self):
+        """
+        Returns the number of neurons
+
+        Returns
+        -------
+        int
+            Number of neurons
+
+        """
+        return sum(layer.get_weight().shape[0] for layer in self.layers[:-1])
 
     def forward(self, X: torch.Tensor, layer_idx: Optional[int] = None, grad: bool = False):
         """
@@ -207,6 +225,7 @@ class NetworkLayer:
         # Active neurons and inputs
         self.active_neurons = list(range(self.original_weight.shape[0]))
         self.active_inputs = list(range(self.original_weight.shape[1]))
+        self.neurons = list(range(self.original_weight.shape[0]))
 
         # Store linear combinations (note that this is done for the input)
         self.neuron_to_coef = dict()
@@ -422,6 +441,23 @@ class NetworkLayer:
         weight = self.get_weight()
         self.set_weight(torch.cat((weight, col), 1))
         self.active_inputs.append(neuron)
+
+    def reset(self):
+        """
+        Resets the layer
+        """
+        # Active neurons and inputs
+        self.active_neurons = list(range(self.original_weight.shape[0]))
+        self.active_inputs = list(range(self.original_weight.shape[1]))
+
+        # Reset coefficient information
+        self.neuron_to_coef = dict()
+
+        # Reset basis information
+        self.input_basis = None
+        self.basis = None
+        self.removed_neurons = []
+        self.change_matrix = torch.zeros(self.original_weight.shape)
 
     def restore_weights(self, neuron):
         """

@@ -2,9 +2,69 @@ import torch
 import os
 from torch import nn
 import numpy as np
+import ast
+from torch.utils.data.dataloader import DataLoader
 
 
-def get_accuracy(loader, model, size=None):
+
+def load_tf_network(file: str) -> torch.nn.Sequential:
+    """
+    Loads a TensorFlow network (``.tf`` file) and returns a PyTorch Sequential neural network
+
+    Parameters
+    ----------
+    file: str
+        File containing TensorFlow network (``.tf`` file)
+
+    Returns
+    -------
+    torch.nn.Sequential
+        Neural network
+
+    """
+    activation = None
+    layers = []
+    weight = None
+    with open(file, "r") as f:
+        for line in f.readlines():
+            if line.startswith("["):
+                t = torch.Tensor(ast.literal_eval(line))
+                if len(t.size()) > 1:
+                    weight = t
+                else:
+                    in_features, out_features = weight.size(1), weight.size(0)
+                    linear = torch.nn.Linear(in_features=in_features, out_features=out_features)
+                    with torch.no_grad():
+                        linear.weight = torch.nn.Parameter(weight)
+                        linear.bias = torch.nn.Parameter(t)
+                    layers.append(linear)
+                    if activation is not None:
+                        layers.append(activation)
+                    activation = None
+            else:
+                if line.startswith("ReLU"):
+                    activation = torch.nn.ReLU()
+    return torch.nn.Sequential(*layers)
+
+
+def get_accuracy(loader: torch.utils.data.DataLoader, model: torch.nn.Sequential, size=None):
+    """
+
+    Parameters
+    ----------
+    loader: torch.utils.data.DataLoader
+        Data loader
+    model: torch.nn.Sequential
+        Neural network
+    size: Optional[int]
+        Number of inputs to consider
+
+    Returns
+    -------
+    float
+        Accuracy of network
+
+    """
     correct = 0
     total = 0
     with torch.no_grad():
@@ -22,29 +82,6 @@ def get_accuracy(loader, model, size=None):
 def load_model(path):
     name = os.path.basename(path)
     return torch.load(path), "model-{}".format(name)
-
-
-def load_keras_model(path):
-    keras_model = Keras_Model(filename=path)
-    layers = []
-    for idx, layer in enumerate(keras_model.model.layers):
-        if len(layer.get_weights()) > 0:
-            weight, bias = layer.get_weights()
-            layers.append(nn.Linear(weight.shape[0], weight.shape[1]))
-            with torch.no_grad():
-                layers[-1].weight = nn.Parameter(torch.from_numpy(np.transpose(weight)))
-                layers[-1].bias = nn.Parameter(torch.from_numpy(bias))
-            if idx < len(keras_model.model.layers)-1:
-                layers.append(nn.ReLU())
-    torch_model = nn.Sequential(*layers)
-    if sum(p.numel() for p in torch_model.parameters()) != keras_model.model.count_params():
-        raise ValueError("Keras Model could not be loaded into PyTorch model")
-    return torch_model
-
-
-def export_keras_to_pb(source_path, target_path):
-    keras_model = Keras_Model(filename=source_path)
-    keras_model.model.save(target_path, save_format="tf",)
 
 
 def load_experiment(path):

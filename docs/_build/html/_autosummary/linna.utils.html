@@ -204,33 +204,47 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#linna.utils.export_keras_to_pb" title="linna.utils.export_keras_to_pb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_keras_to_pb</span></code></a>(source_path, target_path)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#linna.utils.forward" title="linna.utils.forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward</span></code></a>(torch_model, X, layer_idx[, grad])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#linna.utils.forward" title="linna.utils.forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward</span></code></a>(torch_model, X, layer_idx[, grad])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#linna.utils.get_accuracy" title="linna.utils.get_accuracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_accuracy</span></code></a>(loader, model[, size])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#linna.utils.get_accuracy" title="linna.utils.get_accuracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_accuracy</span></code></a>(loader, model[, size])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#linna.utils.get_counterexamples" title="linna.utils.get_counterexamples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_counterexamples</span></code></a>(original_model, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#linna.utils.get_counterexamples" title="linna.utils.get_counterexamples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_counterexamples</span></code></a>(original_model, ...[, ...])</p></td>
 <td><p>Returns the counter examples (w.r.t.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#linna.utils.load_experiment" title="linna.utils.load_experiment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_experiment</span></code></a>(path)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#linna.utils.load_keras_model" title="linna.utils.load_keras_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_keras_model</span></code></a>(path)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#linna.utils.load_experiment" title="linna.utils.load_experiment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_experiment</span></code></a>(path)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#linna.utils.load_model" title="linna.utils.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a>(path)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#linna.utils.save_results" title="linna.utils.save_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_results</span></code></a>(accuracies, reduction_rates, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#linna.utils.load_tf_network" title="linna.utils.load_tf_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_tf_network</span></code></a>(file)</p></td>
+<td><p>Loads a TensorFlow network (<code class="docutils literal notranslate"><span class="pre">.tf</span></code> file) and returns a PyTorch Sequential neural network</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#linna.utils.save_results" title="linna.utils.save_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_results</span></code></a>(accuracies, reduction_rates, ...)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<dl class="py function">
+<dt class="sig sig-object py" id="linna.utils.load_tf_network">
+<span class="sig-prename descclassname"><span class="pre">linna.utils.</span></span><span class="sig-name descname"><span class="pre">load_tf_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequential</span></span></span><a class="headerlink" href="#linna.utils.load_tf_network" title="Permalink to this definition">#</a></dt>
+<dd><p>Loads a TensorFlow network (<code class="docutils literal notranslate"><span class="pre">.tf</span></code> file) and returns a PyTorch Sequential neural network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) – File containing TensorFlow network (<code class="docutils literal notranslate"><span class="pre">.tf</span></code> file)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Neural network</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.nn.Sequential</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="linna.utils.get_accuracy">
 <span class="sig-prename descclassname"><span class="pre">linna.utils.</span></span><span class="sig-name descname"><span class="pre">get_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.utils.get_accuracy" title="Permalink to this definition">#</a></dt>
@@ -239,16 +253,6 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="linna.utils.load_model">
 <span class="sig-prename descclassname"><span class="pre">linna.utils.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.utils.load_model" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="linna.utils.load_keras_model">
-<span class="sig-prename descclassname"><span class="pre">linna.utils.</span></span><span class="sig-name descname"><span class="pre">load_keras_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.utils.load_keras_model" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="linna.utils.export_keras_to_pb">
-<span class="sig-prename descclassname"><span class="pre">linna.utils.</span></span><span class="sig-name descname"><span class="pre">export_keras_to_pb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.utils.export_keras_to_pb" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -307,7 +311,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr, Jan Křetı́nský
+                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -334,10 +338,9 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">linna.utils</a><ul>
+<li><a class="reference internal" href="#linna.utils.load_tf_network"><code class="docutils literal notranslate"><span class="pre">load_tf_network()</span></code></a></li>
 <li><a class="reference internal" href="#linna.utils.get_accuracy"><code class="docutils literal notranslate"><span class="pre">get_accuracy()</span></code></a></li>
 <li><a class="reference internal" href="#linna.utils.load_model"><code class="docutils literal notranslate"><span class="pre">load_model()</span></code></a></li>
-<li><a class="reference internal" href="#linna.utils.load_keras_model"><code class="docutils literal notranslate"><span class="pre">load_keras_model()</span></code></a></li>
-<li><a class="reference internal" href="#linna.utils.export_keras_to_pb"><code class="docutils literal notranslate"><span class="pre">export_keras_to_pb()</span></code></a></li>
 <li><a class="reference internal" href="#linna.utils.load_experiment"><code class="docutils literal notranslate"><span class="pre">load_experiment()</span></code></a></li>
 <li><a class="reference internal" href="#linna.utils.save_results"><code class="docutils literal notranslate"><span class="pre">save_results()</span></code></a></li>
 <li><a class="reference internal" href="#linna.utils.get_counterexamples"><code class="docutils literal notranslate"><span class="pre">get_counterexamples()</span></code></a></li>

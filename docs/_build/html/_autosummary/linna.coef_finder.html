@@ -204,8 +204,8 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#linna.coef_finder.CoefFinder" title="linna.coef_finder.CoefFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoefFinder</span></code></a>([network, io_dict])</p></td>
-<td><p>Reduction base class</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#linna.coef_finder.InfinityCoefFinder" title="linna.coef_finder.InfinityCoefFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InfinityCoefFinder</span></code></a>([network, io_dict])</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#linna.coef_finder.L1CoefFinder" title="linna.coef_finder.L1CoefFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">L1CoefFinder</span></code></a>([network, io_dict])</p></td>
 <td><p></p></td>
@@ -216,33 +216,6 @@
 </tbody>
 </table>
 </div>
-<dl class="py class">
-<dt class="sig sig-object py" id="linna.coef_finder.CoefFinder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linna.coef_finder.</span></span><span class="sig-name descname"><span class="pre">CoefFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="linna.network.html#linna.network.Network" title="linna.network.Network"><span class="pre">Network</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.coef_finder.CoefFinder" title="Permalink to this definition">#</a></dt>
-<dd><p>Reduction base class</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="linna.coef_finder.CoefFinder.find_coefficients">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#linna.coef_finder.CoefFinder.find_coefficients" title="Permalink to this definition">#</a></dt>
-<dd><p>Processes the given layer with the specified parameters</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>layer_idx</strong> (<em>int</em>) – Layer</p></li>
-<li><p><strong>neuron</strong> (<em>int</em>) – Neuron</p></li>
-<li><p><strong>parameters</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Parameters for the algorithm</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Coefficients</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="linna.coef_finder.L1CoefFinder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linna.coef_finder.</span></span><span class="sig-name descname"><span class="pre">L1CoefFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="linna.network.html#linna.network.Network" title="linna.network.Network"><span class="pre">Network</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.coef_finder.L1CoefFinder" title="Permalink to this definition">#</a></dt>
@@ -295,6 +268,32 @@
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="linna.coef_finder.InfinityCoefFinder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linna.coef_finder.</span></span><span class="sig-name descname"><span class="pre">InfinityCoefFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="linna.network.html#linna.network.Network" title="linna.network.Network"><span class="pre">Network</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.coef_finder.InfinityCoefFinder" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="linna.coef_finder.InfinityCoefFinder.find_coefficients">
+<span class="sig-name descname"><span class="pre">find_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#linna.coef_finder.InfinityCoefFinder.find_coefficients" title="Permalink to this definition">#</a></dt>
+<dd><p>Processes the given layer with the specified parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_idx</strong> (<em>int</em>) – Layer</p></li>
+<li><p><strong>neuron</strong> (<em>int</em>) – Neuron</p></li>
+<li><p><strong>parameters</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Parameters for the algorithm</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Coefficients</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -326,7 +325,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr, Jan Křetı́nský
+                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -353,16 +352,16 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">linna.coef_finder</a><ul>
-<li><a class="reference internal" href="#linna.coef_finder.CoefFinder"><code class="docutils literal notranslate"><span class="pre">CoefFinder</span></code></a><ul>
-<li><a class="reference internal" href="#linna.coef_finder.CoefFinder.find_coefficients"><code class="docutils literal notranslate"><span class="pre">CoefFinder.find_coefficients()</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#linna.coef_finder.L1CoefFinder"><code class="docutils literal notranslate"><span class="pre">L1CoefFinder</span></code></a><ul>
 <li><a class="reference internal" href="#linna.coef_finder.L1CoefFinder.find_coefficients"><code class="docutils literal notranslate"><span class="pre">L1CoefFinder.find_coefficients()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#linna.coef_finder.L2CoefFinder"><code class="docutils literal notranslate"><span class="pre">L2CoefFinder</span></code></a><ul>
 <li><a class="reference internal" href="#linna.coef_finder.L2CoefFinder.find_coefficients"><code class="docutils literal notranslate"><span class="pre">L2CoefFinder.find_coefficients()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linna.coef_finder.InfinityCoefFinder"><code class="docutils literal notranslate"><span class="pre">InfinityCoefFinder</span></code></a><ul>
+<li><a class="reference internal" href="#linna.coef_finder.InfinityCoefFinder.find_coefficients"><code class="docutils literal notranslate"><span class="pre">InfinityCoefFinder.find_coefficients()</span></code></a></li>
 </ul>
 </li>
 </ul>

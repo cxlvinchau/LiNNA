@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -192,14 +192,33 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="welcome-to-linna-s-documentation">
-<h1>Welcome to LiNNA’s documentation!<a class="headerlink" href="#welcome-to-linna-s-documentation" title="Permalink to this heading">#</a></h1>
+          <section id="linna-linear-neural-network-abstraction">
+<h1>LiNNA (Linear Neural Network Abstraction)<a class="headerlink" href="#linna-linear-neural-network-abstraction" title="Permalink to this heading">#</a></h1>
+<p><strong>LiNNA (Linear Neural Network Abstraction)</strong> is a Python library for abstracting feed-fordward
+neural networks. The abstraction can then be used to speed up verification or
+to gain insights about redundancies in the network. The core idea is to replace neurons by a
+linear combination of neurons and thereby replace the overall size of the network.</p>
+<section id="authors">
+<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this heading">#</a></h2>
+<p><strong>LiNNA</strong> is developed and maintained at the Technical University of Munich by:</p>
+<ul class="simple">
+<li><p>Stefanie Mohr</p></li>
+<li><p>Jan Křetı́nský</p></li>
+<li><p>Calvin Chau</p></li>
+</ul>
+</section>
+<section id="publications">
+<h2>Publications<a class="headerlink" href="#publications" title="Permalink to this heading">#</a></h2>
+<p>tbd</p>
+</section>
+<section id="api-documentation">
+<h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -215,22 +234,20 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/linna.basis_finder.html">linna.basis_finder</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.basis_finder.html#linna.basis_finder.BasisFinder"><code class="docutils literal notranslate"><span class="pre">BasisFinder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.basis_finder.html#linna.basis_finder.VarianceBasisFinder"><code class="docutils literal notranslate"><span class="pre">VarianceBasisFinder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.basis_finder.html#linna.basis_finder.GreedyBasisFinder"><code class="docutils literal notranslate"><span class="pre">GreedyBasisFinder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/linna.coef_finder.html">linna.coef_finder</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.coef_finder.html#linna.coef_finder.CoefFinder"><code class="docutils literal notranslate"><span class="pre">CoefFinder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.coef_finder.html#linna.coef_finder.L1CoefFinder"><code class="docutils literal notranslate"><span class="pre">L1CoefFinder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.coef_finder.html#linna.coef_finder.L2CoefFinder"><code class="docutils literal notranslate"><span class="pre">L2CoefFinder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.coef_finder.html#linna.coef_finder.InfinityCoefFinder"><code class="docutils literal notranslate"><span class="pre">InfinityCoefFinder</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/linna.utils.html">linna.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.load_tf_network"><code class="docutils literal notranslate"><span class="pre">load_tf_network()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.get_accuracy"><code class="docutils literal notranslate"><span class="pre">get_accuracy()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.load_model"><code class="docutils literal notranslate"><span class="pre">load_model()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.load_keras_model"><code class="docutils literal notranslate"><span class="pre">load_keras_model()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.export_keras_to_pb"><code class="docutils literal notranslate"><span class="pre">export_keras_to_pb()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.load_experiment"><code class="docutils literal notranslate"><span class="pre">load_experiment()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.save_results"><code class="docutils literal notranslate"><span class="pre">save_results()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/linna.utils.html#linna.utils.get_counterexamples"><code class="docutils literal notranslate"><span class="pre">get_counterexamples()</span></code></a></li>
@@ -243,6 +260,7 @@
 </li>
 </ul>
 </div>
+</section>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">#</a></h1>
@@ -272,7 +290,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr, Jan Křetı́nský
+                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -286,8 +304,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">LiNNA (Linear Neural Network Abstraction)</a><ul>
+<li><a class="reference internal" href="#authors">Authors</a></li>
+<li><a class="reference internal" href="#publications">Publications</a></li>
+<li><a class="reference internal" href="#api-documentation">API Documentation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

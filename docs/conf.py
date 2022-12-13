@@ -11,7 +11,7 @@ import os
 sys.path.insert(0, os.path.abspath('../'))
 
 project = 'LiNNA'
-copyright = '2022, Calvin Chau, Stefanie Mohr, Jan Křetı́nský'
+copyright = '2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský'
 author = 'Calvin Chau, Stefanie Mohr, Jan Křetı́nský'
 
 # -- General configuration ---------------------------------------------------

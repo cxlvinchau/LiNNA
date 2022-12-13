@@ -214,15 +214,48 @@
 <dt class="sig sig-object py" id="linna.abstraction.Abstraction">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linna.abstraction.</span></span><span class="sig-name descname"><span class="pre">Abstraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="linna.network.html#linna.network.Network" title="linna.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_finder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'greedy'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'variance'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef_finder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'l1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'l2'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.abstraction.Abstraction" title="Permalink to this definition">#</a></dt>
 <dd><dl class="py method">
-<dt class="sig sig-object py" id="linna.abstraction.Abstraction.remove_neurons">
-<span class="sig-name descname"><span class="pre">remove_neurons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.abstraction.Abstraction.remove_neurons" title="Permalink to this definition">#</a></dt>
-<dd><p>Removes all neurons in a layer that are not in the basis</p>
+<dt class="sig sig-object py" id="linna.abstraction.Abstraction.get_reduction_rate">
+<span class="sig-name descname"><span class="pre">get_reduction_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#linna.abstraction.Abstraction.get_reduction_rate" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linna.abstraction.Abstraction.determine_basis">
+<span class="sig-name descname"><span class="pre">determine_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.abstraction.Abstraction.determine_basis" title="Permalink to this definition">#</a></dt>
+<dd><p>Determines the basis for the given layer</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer_idx</strong> (<em>int</em>) – Layer in which neurons are removed</p></li>
-<li><p><strong>-------</strong> – </p></li>
+<li><p><strong>layer_idx</strong> (<em>int</em>) – Layer</p></li>
+<li><p><strong>basis_size</strong> (<em>int</em>) – Size of the basis</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linna.abstraction.Abstraction.abstract">
+<span class="sig-name descname"><span class="pre">abstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.abstraction.Abstraction.abstract" title="Permalink to this definition">#</a></dt>
+<dd><p>Removes all neurons in a layer that are not in the basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>layer_idx</strong> (<em>int</em>) – Layer in which neurons are removed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linna.abstraction.Abstraction.remove_neuron">
+<span class="sig-name descname"><span class="pre">remove_neuron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.abstraction.Abstraction.remove_neuron" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linna.abstraction.Abstraction.refine">
+<span class="sig-name descname"><span class="pre">refine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.abstraction.Abstraction.refine" title="Permalink to this definition">#</a></dt>
+<dd><p>Refine the abstraction such that the classification of the given counterexample coincides with the
+classification of the original network</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cex</strong> (<em>torch.Tensor</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -260,7 +293,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr, Jan Křetı́nský
+                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -288,7 +321,11 @@
             <ul>
 <li><a class="reference internal" href="#">linna.abstraction</a><ul>
 <li><a class="reference internal" href="#linna.abstraction.Abstraction"><code class="docutils literal notranslate"><span class="pre">Abstraction</span></code></a><ul>
-<li><a class="reference internal" href="#linna.abstraction.Abstraction.remove_neurons"><code class="docutils literal notranslate"><span class="pre">Abstraction.remove_neurons()</span></code></a></li>
+<li><a class="reference internal" href="#linna.abstraction.Abstraction.get_reduction_rate"><code class="docutils literal notranslate"><span class="pre">Abstraction.get_reduction_rate()</span></code></a></li>
+<li><a class="reference internal" href="#linna.abstraction.Abstraction.determine_basis"><code class="docutils literal notranslate"><span class="pre">Abstraction.determine_basis()</span></code></a></li>
+<li><a class="reference internal" href="#linna.abstraction.Abstraction.abstract"><code class="docutils literal notranslate"><span class="pre">Abstraction.abstract()</span></code></a></li>
+<li><a class="reference internal" href="#linna.abstraction.Abstraction.remove_neuron"><code class="docutils literal notranslate"><span class="pre">Abstraction.remove_neuron()</span></code></a></li>
+<li><a class="reference internal" href="#linna.abstraction.Abstraction.refine"><code class="docutils literal notranslate"><span class="pre">Abstraction.refine()</span></code></a></li>
 </ul>
 </li>
 </ul>

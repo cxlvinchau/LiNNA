@@ -1,4 +1,4 @@
-linna.basis\_finder
+﻿linna.basis\_finder
 ===================
 
 .. automodule:: linna.basis_finder
@@ -17,7 +17,6 @@ linna.basis\_finder
 
    .. autosummary::
    
-      BasisFinder
       GreedyBasisFinder
       VarianceBasisFinder
    

@@ -204,44 +204,15 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#linna.basis_finder.BasisFinder" title="linna.basis_finder.BasisFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BasisFinder</span></code></a>([network, io_dict])</p></td>
-<td><p>Basis finder base class</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#linna.basis_finder.GreedyBasisFinder" title="linna.basis_finder.GreedyBasisFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GreedyBasisFinder</span></code></a>([network, io_dict])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#linna.basis_finder.GreedyBasisFinder" title="linna.basis_finder.GreedyBasisFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GreedyBasisFinder</span></code></a>([network, io_dict])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#linna.basis_finder.VarianceBasisFinder" title="linna.basis_finder.VarianceBasisFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VarianceBasisFinder</span></code></a>([network, io_dict])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#linna.basis_finder.VarianceBasisFinder" title="linna.basis_finder.VarianceBasisFinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VarianceBasisFinder</span></code></a>([network, io_dict])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<dl class="py class">
-<dt class="sig sig-object py" id="linna.basis_finder.BasisFinder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linna.basis_finder.</span></span><span class="sig-name descname"><span class="pre">BasisFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="linna.network.html#linna.network.Network" title="linna.network.Network"><span class="pre">Network</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.basis_finder.BasisFinder" title="Permalink to this definition">#</a></dt>
-<dd><p>Basis finder base class</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="linna.basis_finder.BasisFinder.find_basis">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#linna.basis_finder.BasisFinder.find_basis" title="Permalink to this definition">#</a></dt>
-<dd><p>Finds the basis for the given layer</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>layer_idx</strong> (<em>int</em>) – Layer</p></li>
-<li><p><strong>basis_size</strong> (<em>int</em>) – Size of the basis</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Basis for layer</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[int]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="linna.basis_finder.VarianceBasisFinder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linna.basis_finder.</span></span><span class="sig-name descname"><span class="pre">VarianceBasisFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="linna.network.html#linna.network.Network" title="linna.network.Network"><span class="pre">Network</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.basis_finder.VarianceBasisFinder" title="Permalink to this definition">#</a></dt>
@@ -323,7 +294,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr, Jan Křetı́nský
+                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -350,10 +321,6 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">linna.basis_finder</a><ul>
-<li><a class="reference internal" href="#linna.basis_finder.BasisFinder"><code class="docutils literal notranslate"><span class="pre">BasisFinder</span></code></a><ul>
-<li><a class="reference internal" href="#linna.basis_finder.BasisFinder.find_basis"><code class="docutils literal notranslate"><span class="pre">BasisFinder.find_basis()</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#linna.basis_finder.VarianceBasisFinder"><code class="docutils literal notranslate"><span class="pre">VarianceBasisFinder</span></code></a><ul>
 <li><a class="reference internal" href="#linna.basis_finder.VarianceBasisFinder.find_basis"><code class="docutils literal notranslate"><span class="pre">VarianceBasisFinder.find_basis()</span></code></a></li>
 </ul>

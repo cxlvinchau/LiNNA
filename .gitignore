@@ -1,3 +1,5 @@
 venv
 .idea
 /**/*.pyc
+.pytest_cache
+tests/.pytest_cache

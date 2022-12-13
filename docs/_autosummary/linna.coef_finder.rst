@@ -1,4 +1,4 @@
-linna.coef\_finder
+﻿linna.coef\_finder
 ==================
 
 .. automodule:: linna.coef_finder
@@ -17,7 +17,7 @@ linna.coef\_finder
 
    .. autosummary::
    
-      CoefFinder
+      InfinityCoefFinder
       L1CoefFinder
       L2CoefFinder
    

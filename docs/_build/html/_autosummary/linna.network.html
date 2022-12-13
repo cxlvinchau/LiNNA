@@ -216,7 +216,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="linna.network.Network">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linna.network.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">torch_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequential</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.network.Network" title="Permalink to this definition">#</a></dt>
-<dd><p>Wraps a sequential PyTorch model. In our context, a layer consists of linear layer and a non-linear function.
+<dd><p>Wraps a sequential PyTorch model. A layer consists of linear layer and possibly a non-linear function.
 Suppose a sequential PyTorch model with 6 layers has the following structure:</p>
 <p>nn.Linear, nn.ReLU, nn.Linear, nn.ReLU, nn.Linear, nn.Softmax</p>
 <p>In our setting, we have 3 layers that are organized as follows:</p>
@@ -224,6 +224,25 @@ Suppose a sequential PyTorch model with 6 layers has the following structure:</p
 Layer 1: nn.Linear, nn.ReLU
 Layer 2: nn.Linear, nn.Softmax</p>
 <p>Throughout the class neurons are uniquely identified by their index, i.e. corresponding row index in the weight matrix.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linna.network.Network.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#linna.network.Network.reset" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linna.network.Network.get_num_neurons">
+<span class="sig-name descname"><span class="pre">get_num_neurons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#linna.network.Network.get_num_neurons" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the number of neurons</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of neurons</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="linna.network.Network.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.network.Network.forward" title="Permalink to this definition">#</a></dt>
@@ -489,6 +508,12 @@ of <code class="docutils literal notranslate"><span class="pre">layer_idx</span>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linna.network.NetworkLayer.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#linna.network.NetworkLayer.reset" title="Permalink to this definition">#</a></dt>
+<dd><p>Resets the layer</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linna.network.NetworkLayer.restore_weights">
 <span class="sig-name descname"><span class="pre">restore_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neuron</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#linna.network.NetworkLayer.restore_weights" title="Permalink to this definition">#</a></dt>
 <dd><p>Restores the weights of the layer w.r.t a previously removed neuron</p>
@@ -532,7 +557,7 @@ of <code class="docutils literal notranslate"><span class="pre">layer_idx</span>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr, Jan Křetı́nský
+                Copyright &#169; 2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -560,6 +585,8 @@ of <code class="docutils literal notranslate"><span class="pre">layer_idx</span>
             <ul>
 <li><a class="reference internal" href="#">linna.network</a><ul>
 <li><a class="reference internal" href="#linna.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
+<li><a class="reference internal" href="#linna.network.Network.reset"><code class="docutils literal notranslate"><span class="pre">Network.reset()</span></code></a></li>
+<li><a class="reference internal" href="#linna.network.Network.get_num_neurons"><code class="docutils literal notranslate"><span class="pre">Network.get_num_neurons()</span></code></a></li>
 <li><a class="reference internal" href="#linna.network.Network.forward"><code class="docutils literal notranslate"><span class="pre">Network.forward()</span></code></a></li>
 <li><a class="reference internal" href="#linna.network.Network.classify"><code class="docutils literal notranslate"><span class="pre">Network.classify()</span></code></a></li>
 <li><a class="reference internal" href="#linna.network.Network.delete_neuron"><code class="docutils literal notranslate"><span class="pre">Network.delete_neuron()</span></code></a></li>
@@ -581,6 +608,7 @@ of <code class="docutils literal notranslate"><span class="pre">layer_idx</span>
 <li><a class="reference internal" href="#linna.network.NetworkLayer.readjust_weights"><code class="docutils literal notranslate"><span class="pre">NetworkLayer.readjust_weights()</span></code></a></li>
 <li><a class="reference internal" href="#linna.network.NetworkLayer.restore_neuron"><code class="docutils literal notranslate"><span class="pre">NetworkLayer.restore_neuron()</span></code></a></li>
 <li><a class="reference internal" href="#linna.network.NetworkLayer.restore_input"><code class="docutils literal notranslate"><span class="pre">NetworkLayer.restore_input()</span></code></a></li>
+<li><a class="reference internal" href="#linna.network.NetworkLayer.reset"><code class="docutils literal notranslate"><span class="pre">NetworkLayer.reset()</span></code></a></li>
 <li><a class="reference internal" href="#linna.network.NetworkLayer.restore_weights"><code class="docutils literal notranslate"><span class="pre">NetworkLayer.restore_weights()</span></code></a></li>
 </ul>
 </li>

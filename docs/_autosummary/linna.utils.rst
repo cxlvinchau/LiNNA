@@ -1,4 +1,4 @@
-linna.utils
+﻿linna.utils
 ===========
 
 .. automodule:: linna.utils
@@ -13,13 +13,12 @@ linna.utils
 
    .. autosummary::
    
-      export_keras_to_pb
       forward
       get_accuracy
       get_counterexamples
       load_experiment
-      load_keras_model
       load_model
+      load_tf_network
       save_results
    
    
