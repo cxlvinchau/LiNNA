@@ -37,6 +37,7 @@ class Network:
         for layer_idx in range(0, len(torch_model), 2):
             assert isinstance(torch_model[layer_idx], nn.Linear), "Expected linear layer"
             self.layers.append(NetworkLayer(torch_model=self.torch_model, layer_idx=layer_idx))
+        self.neuron_to_coef = dict()
 
     def reset(self):
         self.torch_model = copy.deepcopy(self.original_torch_model)
@@ -166,6 +167,7 @@ class Network:
 
         """
         assert layer_idx + 1 < len(self.layers)
+        self.neuron_to_coef[(neuron, layer_idx)] = coef
         self.layers[layer_idx+1].readjust_weights(neuron=neuron, coef=coef)
 
     def get_io_matrix(self, layer_idx: int, loader, size=1000) -> np.ndarray:

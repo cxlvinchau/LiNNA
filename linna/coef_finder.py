@@ -20,7 +20,21 @@ class _CoefFinder(abc.ABC):
         self.io_dict = io_dict
         self.params = params
 
-    def find_coefficients_layer(self, layer_idx: int) -> Dict[int, torch.Tensor]:
+    def find_all_coefficients(self, layer_idx: int) -> Dict[int, torch.Tensor]:
+        """
+        Determines the coefficients of all non-basis neurons
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer for which coefficients should be computed
+
+        Returns
+        -------
+        Dict[int, torch.Tensor]
+            Mapping of non-basis neurons to coefficients
+
+        """
         result = dict()
         for neuron in self.network.layers[layer_idx].neurons:
             if neuron not in self.network.layers[layer_idx].basis:
@@ -115,7 +129,7 @@ class L2CoefFinder(_CoefFinder):
         X = np.matmul(self._inverse, np.matmul(A.T, io_matrix[:, neuron]))
         return torch.Tensor(X)
 
-    def find_coefficients_layer(self, layer_idx: int, **parameters) -> Dict[int, torch.Tensor]:
+    def find_all_coefficients(self, layer_idx: int, **parameters) -> Dict[int, torch.Tensor]:
         io_matrix = self.io_dict[layer_idx]
         basis = self.network.layers[layer_idx].basis
         non_basic = [neuron for neuron in self.network.layers[layer_idx].neurons if neuron not in basis]

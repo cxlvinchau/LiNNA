@@ -92,7 +92,7 @@ class Abstraction:
         if basis is None:
             raise ValueError(f"Basis has not been determined for {layer_idx} yet")
         non_basic = [i for i in self.network.layers[layer_idx].active_neurons if i not in basis]
-        coefs = self.coef_finder.find_coefficients_layer(layer_idx=layer_idx, **coef_params)
+        coefs = self.coef_finder.find_all_coefficients(layer_idx=layer_idx, **coef_params)
         for neuron in non_basic:
             self.network.delete_neuron(layer_idx=layer_idx, neuron=neuron)
             self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=coefs[neuron])
