@@ -273,9 +273,8 @@ class NetworkLayer:
             Weight
 
         """
-        assert weight.size() == self.get_weight().size(), "Dimensions of weight not matching"
         with torch.no_grad():
-            self.torch_model[self.idx].weight = nn.Parameter(weight)
+            self.torch_model[self.layer_idx].weight = nn.Parameter(weight)
 
     def set_bias(self, bias: torch.Tensor):
         """
@@ -286,9 +285,8 @@ class NetworkLayer:
         bias: torch.Tensor
 
         """
-        assert bias.size() == self.get_bias().size(), "Dimensions of bias not matching"
         with torch.no_grad():
-            self.torch_model[self.idx].bias = nn.Parameter(bias)
+            self.torch_model[self.layer_idx].bias = nn.Parameter(bias)
 
     def _get_input_index(self, input_neuron: int):
         """

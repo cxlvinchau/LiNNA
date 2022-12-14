@@ -1,8 +1,13 @@
 import abc
+import random
 from typing import List, Dict
 import numpy as np
+import warnings
 
 import torch
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.exceptions import ConvergenceWarning
+from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances
 
 from linna.network import Network
 
@@ -71,3 +76,66 @@ class GreedyBasisFinder(_BasisFinder):
                 break
             basis.append(best_neuron)
         return basis
+
+
+class ClusteringBasisFinder(_BasisFinder):
+
+    def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None,
+                 clustering: str = "kmeans", **parameters):
+        super().__init__(network=network, io_dict=io_dict, **parameters)
+        self.clustering = clustering
+
+    def _find_basis_dbscan(self, layer_idx: int, basis_size: int, **parameters):
+        io_matrix = self.io_dict[layer_idx]
+        num_nodes = np.shape(io_matrix)[1]
+        db = DBSCAN(min_samples=2, eps=num_nodes - basis_size).fit(io_matrix.T)
+        labels = np.array(db.labels_)
+        cluster_centers = []
+        for i in np.unique(labels):
+            # print("Check for i: ",i)
+            if i > -1:
+                cluster_centers.append(np.squeeze(np.mean(io_matrix[:, np.where(labels == i)], axis=2)))
+        return cluster_centers, labels
+
+    def _find_basis_kmeans(self, layer_idx: int, basis_size: int, **parameters):
+        io_matrix = self.io_dict[layer_idx]
+        km = KMeans(n_clusters=basis_size)
+        # The warning has to be fetched, such that the correct number of nodes can be propagated
+        with warnings.catch_warnings(record=True) as w:
+            km = km.fit(io_matrix.T)
+        labels = km.labels_
+        cluster_centers = km.cluster_centers_
+        return cluster_centers, labels
+
+    def find_basis(self, layer_idx: int, basis_size: int, **parameters) -> List[int]:
+        cluster_centers, labels = None, None
+        io_matrix = self.io_dict[layer_idx]
+        if self.clustering == "kmeans":
+            cluster_centers, labels = self._find_basis_kmeans(layer_idx=layer_idx, basis_size=basis_size, **parameters)
+        elif self.clustering == "dbscan":
+            cluster_centers, labels = self._find_basis_kmeans(layer_idx=layer_idx, basis_size=basis_size, **parameters)
+        else:
+            raise ValueError(f"Unsupported clustering algorithm {self.clustering}")
+
+        basis = []
+        for i in np.unique(labels):
+            cluster = np.where(labels == i)
+            if i == -1:
+                for node in cluster[0]:
+                    basis.append(np.asscalar(node))
+            elif len(cluster[0]) > 1:
+                myc = cluster_centers[i]
+                myc = myc.reshape(1, np.shape(myc)[0])
+                closest, _ = pairwise_distances_argmin_min(myc, io_matrix[:, cluster[0]].transpose())
+                best_node = cluster[0][closest[0]]
+                basis.append(best_node)
+            else:
+                basis.append(cluster[0].item())
+        basis.sort()
+        return basis
+
+
+class RandomBasisFinder(_BasisFinder):
+
+    def find_basis(self, layer_idx: int, basis_size: int, **parameters) -> List[int]:
+        return random.sample(self.network.layers[layer_idx].neurons, k=basis_size)

@@ -1,6 +1,6 @@
 import torch
 
-from linna.coef_finder import L1CoefFinder, L2CoefFinder
+from linna.coef_finder import L1CoefFinder, L2CoefFinder, ClusteringCoefFinder
 from tests.toy_network import create_toy_network
 
 import pytest
@@ -39,6 +39,14 @@ class TestCoefFinder:
 
     def test_l2(self, network, io_dict):
         coef_finder = L2CoefFinder(network=network, io_dict=io_dict)
+
+        # Assert neurons in basis are assigned unit vector
+        for v, neuron in zip([(1., 0.), (0., 1.)], [0, 2]):
+            c = coef_finder.find_coefficients(layer_idx=0, neuron=neuron)
+            assert torch.all(torch.isclose(c, torch.tensor(v)))
+
+    def test_clustering(self, network, io_dict):
+        coef_finder = ClusteringCoefFinder(network=network, io_dict=io_dict)
 
         # Assert neurons in basis are assigned unit vector
         for v, neuron in zip([(1., 0.), (0., 1.)], [0, 2]):

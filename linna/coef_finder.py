@@ -2,11 +2,12 @@ import abc
 from typing import Dict, Any
 
 import torch
+from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances
 
 from linna.network import Network
 import gurobipy as gb
 from gurobipy import GRB
-from scipy.sparse import identity, hstack, coo_matrix
+from scipy.sparse import identity, hstack, coo_matrix, lil_matrix
 import numpy as np
 
 from scipy.optimize import linprog
@@ -18,7 +19,7 @@ class _CoefFinder(abc.ABC):
     def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None, params: Dict[str, Any] = None):
         self.network = network
         self.io_dict = io_dict
-        self.params = params
+        self.params = dict() if params is None else params
 
     def find_all_coefficients(self, layer_idx: int) -> Dict[int, torch.Tensor]:
         """
@@ -138,7 +139,17 @@ class L2CoefFinder(_CoefFinder):
         return {neuron: X[:, idx] for idx, neuron in enumerate(non_basic)}
 
 
-class InfinityCoefFinder(_CoefFinder):
+class ClusteringCoefFinder(_CoefFinder):
 
-    def find_coefficients(self, layer_idx: int, neuron: int, **parameters) -> torch.Tensor:
-        pass
+    def find_coefficients(self, layer_idx: int, neuron: int) -> torch.Tensor:
+        io_matrix = self.io_dict[layer_idx]
+        v = np.expand_dims(io_matrix[:, neuron], 0)
+        closest, _ = pairwise_distances_argmin_min(v, io_matrix.T)
+        coef = torch.Tensor([1. if closest[0] == neuron else 0. for neuron in self.network.layers[layer_idx].basis])
+        return coef
+
+
+class DummyCoefFinder(_CoefFinder):
+
+    def find_coefficients(self, layer_idx: int, neuron: int) -> torch.Tensor:
+        return torch.zeros(len(self.network.layers[layer_idx].basis))

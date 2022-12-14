@@ -15,8 +15,8 @@ def loader():
     return [[torch.tensor([[1., 0.], [2., -1.], [3., 5.], [1., 1.]]), [0, 1, 0, 0]]]
 
 
-@pytest.mark.parametrize("basis_finder", ["variance", "greedy"])
-@pytest.mark.parametrize("coef_finder", ["l1", "l2"])
+@pytest.mark.parametrize("basis_finder", ["variance", "greedy", "kmeans", "dbscan", "random"])
+@pytest.mark.parametrize("coef_finder", ["l1", "l2", "clustering", "dummy"])
 class TestAbstraction:
 
     def test_abstract(self, basis_finder, coef_finder, network, loader):

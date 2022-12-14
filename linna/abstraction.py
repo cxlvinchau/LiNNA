@@ -3,14 +3,14 @@ from typing import Literal, Dict, Any, Optional
 import numpy as np
 import torch
 
-from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder
-from linna.coef_finder import L1CoefFinder, L2CoefFinder
+from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder, ClusteringBasisFinder, RandomBasisFinder
+from linna.coef_finder import L1CoefFinder, L2CoefFinder, ClusteringCoefFinder, DummyCoefFinder
 from linna.network import Network
 
 from torch.utils.data.dataloader import DataLoader
 
-BASIS_FINDER = Literal["greedy", "variance"]
-COEF_FINDER = Literal["l1", "l2"]
+BASIS_FINDER = Literal["greedy", "variance", "kmeans", "dbscan", "random"]
+COEF_FINDER = Literal["l1", "l2", "kmeans", "clustering", "dummy"]
 
 
 class Abstraction:
@@ -49,6 +49,12 @@ class Abstraction:
             self.basis_finder = GreedyBasisFinder(network=network, io_dict=self.io_dict)
         elif basis_finder == "variance":
             self.basis_finder = VarianceBasisFinder(network=network, io_dict=self.io_dict)
+        elif basis_finder == "kmeans":
+            self.basis_finder = ClusteringBasisFinder(network=network, io_dict=self.io_dict, clustering="kmeans")
+        elif basis_finder == "dbscan":
+            self.basis_finder = ClusteringBasisFinder(network=network, io_dict=self.io_dict, clustering="dbscan")
+        elif basis_finder == "random":
+            self.basis_finder = RandomBasisFinder(network=network, io_dict=self.io_dict)
         else:
             raise ValueError(f"Invalid basis finder {str(basis_finder)}")
 
@@ -57,6 +63,10 @@ class Abstraction:
             self.coef_finder = L1CoefFinder(network=network, io_dict=self.io_dict, params={"solver": "scipy"})
         elif coef_finder == "l2":
             self.coef_finder = L2CoefFinder(network=network, io_dict=self.io_dict)
+        elif coef_finder == "clustering":
+            self.coef_finder = ClusteringCoefFinder(network=network, io_dict=self.io_dict)
+        elif coef_finder == "dummy":
+            self.coef_finder = DummyCoefFinder(network=network, io_dict=self.io_dict)
         else:
             raise ValueError(f"Invalid coef finder {str(coef_finder)}")
 

@@ -1,7 +1,7 @@
 import torch
 
 from linna.coef_finder import L1CoefFinder, L2CoefFinder
-from linna.refinement import DifferenceRefinement
+from linna.refinement import DifferenceRefinement, LookaheadRefinement
 from tests.toy_network import create_toy_network
 
 import pytest
@@ -33,5 +33,10 @@ class TestRefinement:
 
     def test_difference_refinement(self, network, io_dict):
         strategy = DifferenceRefinement(network=network, io_dict=io_dict)
+        cex = torch.Tensor([1., 1.])
+        neuron, layer = strategy.find_neuron(cex, layers=[0, 1])
+
+    def test_lookahead_refinement(self, network, io_dict):
+        strategy = LookaheadRefinement(network=network, io_dict=io_dict)
         cex = torch.Tensor([1., 1.])
         neuron, layer = strategy.find_neuron(cex, layers=[0, 1])

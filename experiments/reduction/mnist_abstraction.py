@@ -16,7 +16,7 @@ testset = datasets.MNIST('datasets/MNIST/TESTSET', download=DOWNLOAD, train=Fals
 testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=True)
 
 # Load trained neural network
-sequential = load_tf_network(file="networks/MNIST_3x100.tf")
+sequential = load_tf_network(file="../networks/MNIST_3x100.tf")
 network = Network(torch_model=sequential)
 
 # Compute different abstractions

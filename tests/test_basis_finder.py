@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from linna.basis_finder import VarianceBasisFinder, GreedyBasisFinder
+from linna.basis_finder import VarianceBasisFinder, GreedyBasisFinder, ClusteringBasisFinder
 from tests.toy_network import create_toy_network
 
 
@@ -22,6 +22,10 @@ class TestBasisFinder(unittest.TestCase):
 
     def test_greedy_basis_finder(self):
         finder = GreedyBasisFinder(network=self.network, io_dict=self.io_dict)
+        finder.find_basis(layer_idx=0, basis_size=2)
+
+    def test_clustering_basis_finder(self):
+        finder = ClusteringBasisFinder(network=self.network, io_dict=self.io_dict)
         finder.find_basis(layer_idx=0, basis_size=2)
 
 
