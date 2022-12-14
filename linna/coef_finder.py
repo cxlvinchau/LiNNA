@@ -144,8 +144,9 @@ class ClusteringCoefFinder(_CoefFinder):
     def find_coefficients(self, layer_idx: int, neuron: int) -> torch.Tensor:
         io_matrix = self.io_dict[layer_idx]
         v = np.expand_dims(io_matrix[:, neuron], 0)
+        io_matrix = io_matrix[:, self.network.layers[layer_idx].basis]
         closest, _ = pairwise_distances_argmin_min(v, io_matrix.T)
-        coef = torch.Tensor([1. if closest[0] == neuron else 0. for neuron in self.network.layers[layer_idx].basis])
+        coef = torch.Tensor([1. if closest[0] == idx else 0. for idx in range(len(self.network.layers[layer_idx].basis))])
         return coef
 
 
