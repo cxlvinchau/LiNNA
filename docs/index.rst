@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-LiNNA (Linear Neural Network Abstraction)
-=========================================
+LiNNA
+=====
 **LiNNA (Linear Neural Network Abstraction)** is a Python library for abstracting feed-fordward
 neural networks. The abstraction can then be used to speed up verification or
 to gain insights about redundancies in the network. The core idea is to replace neurons by a
@@ -14,14 +14,15 @@ Authors
 -------
 **LiNNA** is developed and maintained at the Technical University of Munich by:
 
-- Stefanie Mohr
-- Jan Křetı́nský
-- Calvin Chau
+- `Stefanie Mohr <https://www7.in.tum.de/~mohr/>`_
+- `Jan Křetı́nský <https://www7.in.tum.de/~kretinsk/>`_
+- `Calvin Chau <https://cxlvinchau.github.io/>`_
 
 Publications
 ------------
-
-tbd
+   Ashok, P., Hashemi, V., Křetínský, J., Mohr, S. (2020). DeepAbstract: Neural Network Abstraction for
+   Accelerating Verification. ATVA 2020. (`Paper <https://link.springer.com/chapter/10.1007/978-3-030-59152-6_5>`_,
+   `arXiv <https://arxiv.org/abs/2006.13735>`_).
 
 API Documentation
 -----------------
