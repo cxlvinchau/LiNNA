@@ -60,7 +60,7 @@ class Abstraction:
 
         # Initialize coef finder
         if coef_finder == "l1":
-            self.coef_finder = L1CoefFinder(network=network, io_dict=self.io_dict, params={"solver": "scipy"})
+            self.coef_finder = L1CoefFinder(network=network, io_dict=self.io_dict, params=coef_params)
         elif coef_finder == "l2":
             self.coef_finder = L2CoefFinder(network=network, io_dict=self.io_dict)
         elif coef_finder == "clustering":
