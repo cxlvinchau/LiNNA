@@ -6,6 +6,10 @@ to gain insights about redundancies in the network.
 The idea is to replace neurons by a linear combination of neurons
 and thereby reduce the overall size of the network.
 
+In addition, **LiNNA** implements the recently proposed *bisimulation* for neural
+networks by Prabhakar (see [Bisimulations for Neural Network Reduction](https://link.springer.com/chapter/10.1007/978-3-030-94583-1_14))
+and the previously proposed **DeepAbstract** (see Publications for details).
+
 For more information, we refer to the [LiNNA website]().
 
 Usage
@@ -21,8 +25,6 @@ at the [Technical University of Munich](https://www.in.tum.de/en/in/cover-page/)
 
 Publications
 ------------
-> **DeepAbstract: Neural Network Abstraction for Accelerating Verification**
-> 
-> *Pranav Ashok, Vahid Hashemi, Jan Křetínský and Stefanie Mohr*
-> 
-> [Paper](https://link.springer.com/chapter/10.1007/978-3-030-59152-6_5)
+**DeepAbstract: Neural Network Abstraction for Accelerating Verification**
+*Pranav Ashok, Vahid Hashemi, Jan Křetínský and Stefanie Mohr*
+([Paper](https://link.springer.com/chapter/10.1007/978-3-030-59152-6_5))
