@@ -12,8 +12,8 @@ and the previously proposed **DeepAbstract** (see Publications for details).
 
 For more information, we refer to the [LiNNA website]().
 
-Usage
------
+Citing LiNNA
+------------
 
 Experimental Results
 --------------------

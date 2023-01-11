@@ -46,10 +46,9 @@ class Bisimulation:
     arXiv: https://arxiv.org/abs/2110.03726
     """
 
-    def __init__(self, network: Network, io_dict: Dict[int, torch.Tensor], loader):
+    def __init__(self, network: Network, io_dict: Dict[int, torch.Tensor]):
         self.network = network
         self.io_dict = io_dict
-        self.loader = loader
 
     def process_all_layers(self, delta=1e-16):
         # delta is not 0, because agglomerative clustering only works with "smaller than"-distance, not "smaller or
@@ -91,18 +90,13 @@ class Bisimulation:
         io = self.io_dict[layer_idx]
         bias = self.network.layers[layer_idx].get_bias().cpu().detach().numpy()
         num_nodes = np.shape(io)[1]
-        # print(f" Neurons: {num_nodes}")
         pd = pairwise_distances(io.T)
-        equal_nodes = len(np.where(pd <= 0)[0]) - num_nodes
-        # print(f" Equal Neurons: {equal_nodes}")
         ac = AgglomerativeClustering(n_clusters=None, distance_threshold=delta, affinity='precomputed',
                                      linkage='complete')
         distances = get_distances(io, bias)
-        # labels = self.iteratie_kmeans(distances, delta)
         ac.fit(distances)
         labels = ac.labels_
         cluster_centers = []
-        # print(f" Found {len(np.unique(labels))} different clusters")
         for i in np.unique(labels):
             cluster_centers.append(np.squeeze(np.mean(io[:, np.where(labels == i)], axis=2)))
         temp_basis, lin_comb = self.evaluate_clustering(labels, io, cluster_centers, layer_idx, delta)
@@ -115,4 +109,3 @@ class Bisimulation:
         self.network.set_basis(layer_idx, temp_basis)
         for neuron in removed_neurons:
             self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=torch.Tensor(np.squeeze(lin_comb[:, neuron].toarray())))
-        self.io_dict[layer_idx] = self.network.get_io_matrix(loader=self.loader, layer_idx=layer_idx, size=np.shape(io)[0])

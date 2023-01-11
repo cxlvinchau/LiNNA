@@ -3,7 +3,8 @@ from typing import Literal, Dict, Any, Optional
 import numpy as np
 import torch
 
-from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder, ClusteringBasisFinder, RandomBasisFinder
+from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder, ClusteringBasisFinder, RandomBasisFinder, \
+    GreedyPruningBasisFinder
 from linna.coef_finder import L1CoefFinder, L2CoefFinder, ClusteringCoefFinder, DummyCoefFinder
 from linna.network import Network
 
@@ -47,6 +48,8 @@ class Abstraction:
         # Initialize basis finder
         if basis_finder == "greedy":
             self.basis_finder = GreedyBasisFinder(network=network, io_dict=self.io_dict)
+        elif basis_finder == "greedy_pruning":
+            self.basis_finder = GreedyPruningBasisFinder(network=network, io_dict=self.io_dict)
         elif basis_finder == "variance":
             self.basis_finder = VarianceBasisFinder(network=network, io_dict=self.io_dict)
         elif basis_finder == "kmeans":

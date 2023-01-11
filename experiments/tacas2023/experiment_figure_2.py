@@ -1,10 +1,8 @@
-from experiments.reduction.run_reduction_experiment import run_reduction_experiment, run_bisimulation
+from experiments.reduction.run_reduction_experiment import run_reduction_experiment
 from torchvision import datasets, transforms
 import torch
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-import pandas as pd
 
 # Matplotlib and seaborn settings
 FIGURE_SIZE = (10, 5)
@@ -13,10 +11,10 @@ sns.set_style("whitegrid")
 
 # Experiment settings
 DOWNLOAD = False  # Set to True to download the MNIST dataset
-RESOLUTION = 15  # Determines the number of reduction rates
+RESOLUTION = 5  # Determines the number of reduction rates
 
 
-def generate_figure_3():
+def generate_figure_2():
     # Set to true to download MNIST data set
     # Get training data
     transform = transforms.Compose([transforms.ToTensor()])
@@ -25,8 +23,6 @@ def generate_figure_3():
     testset = datasets.MNIST('../datasets/MNIST/TESTSET', download=DOWNLOAD, train=False, transform=transform)
 
     network = "MNIST_3x100.tf"
-
-    bisimulation = run_bisimulation(testset=testset, network_path=f"../networks/{network}")
 
     # Run abstraction/reduction with different configurations
     l2_variance = run_reduction_experiment(
@@ -42,34 +38,15 @@ def generate_figure_3():
         network=f"../networks/{network}",
         trainset=trainset,
         testset=testset,
-        basis_finder="greedy",
+        basis_finder="greedy_pruning",
         coef_finder="l2",
         resolution=RESOLUTION
     )
 
-    deep_abstract = run_reduction_experiment(
-        network=f"../networks/{network}",
-        trainset=trainset,
-        testset=testset,
-        basis_finder="kmeans",
-        coef_finder="clustering",
-        resolution=RESOLUTION
-    )
-
-    # Create figures
-    plt.figure(figsize=FIGURE_SIZE)
-    plt.plot(l2_greedy["reduction_rate"], l2_greedy["accuracy"], '-', label="Greedy LiNNA")
-    plt.plot(l2_variance["reduction_rate"], l2_variance["accuracy"], '-', label="Heuristic LiNNA")
-    plt.plot(deep_abstract["reduction_rate"], deep_abstract["accuracy"], '--', label="DeepAbstract")
-    plt.plot(bisimulation["reduction_rate"], bisimulation["accuracy"], "-.", label="Bisimulation")
-    plt.ylabel("Accuracy")
-    plt.xlabel("Reduction Rate")
-    plt.xlim(0.0, 1)
-    plt.ylim(0.0, 1.1)
-    plt.legend()
-    plt.savefig("generated_figures/figure_3.png", bbox_inches="tight", dpi=200)
+    plt.plot(l2_variance["reduction_rate"], l2_variance["duration"])
+    plt.plot(l2_greedy["reduction_rate"], l2_greedy["duration"])
     plt.show()
 
 
 if __name__ == "__main__":
-    generate_figure_3()
+    generate_figure_2()

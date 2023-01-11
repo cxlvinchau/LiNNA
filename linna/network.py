@@ -7,6 +7,7 @@ import numpy as np
 import copy
 
 from linna import utils
+from linna.utils import writeNNet
 
 
 class Network:
@@ -202,6 +203,18 @@ class Network:
                 if status:
                     break
         return torch.stack(outputs).cpu().detach().numpy()
+
+    def export_to_nnet(self, filename: str):
+        input_size = self.layers[0].get_weight().shape[1]
+        writeNNet(
+            weights=[layer.get_weight().cpu().detach().numpy() for layer in self.layers],
+            biases=[layer.get_bias().cpu().detach().numpy() for layer in self.layers],
+            inputMins=np.zeros(input_size),
+            inputMaxes=np.zeros(input_size),
+            means=np.zeros(input_size+1),
+            ranges=np.zeros(input_size+1),
+            fileName=filename
+        )
 
 
 class NetworkLayer:

@@ -78,6 +78,33 @@ class GreedyBasisFinder(_BasisFinder):
         return basis
 
 
+class GreedyPruningBasisFinder(_BasisFinder):
+
+    def find_basis(self, layer_idx: int, basis_size: int, **parameters) -> List[int]:
+        io_matrix: np.ndarray = self.io_dict[layer_idx]
+        n = self.network.layers[layer_idx].get_weight().size(dim=0)
+        basis = list(self.network.layers[layer_idx].neurons)
+        min_error, best_neuron = None, None
+        for _ in range(n - basis_size):
+            candidates = [i for i in range(n) if i in basis]
+            for neuron in candidates:
+                tmp_basis = [n for n in basis if n != neuron]
+                try:
+                    A = io_matrix[:, tmp_basis]
+                    X = np.matmul(np.linalg.inv(np.matmul(A.T, A)), np.matmul(A.T, io_matrix))
+                    # Compute projection error
+                    error = np.sum((io_matrix - np.matmul(A, X)) ** 2)
+                    if min_error is None or error < min_error:
+                        min_error, best_neuron = error, neuron
+                except:
+                    continue
+            if best_neuron is None:
+                break
+            basis.remove(best_neuron)
+            min_error, best_neuron = None, None
+        return basis
+
+
 class ClusteringBasisFinder(_BasisFinder):
 
     def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None,
