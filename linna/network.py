@@ -252,6 +252,11 @@ class NetworkLayer:
         self.removed_neurons = []
         self.change_matrix = torch.zeros(self.original_weight.shape)
 
+        # Maps a neuron to its lower and upper bound linear combination
+        self.neuron_to_lower_bound = dict()
+        self.neuron_to_upper_bound = dict()
+        self.neuron_to_upper_bound_term = dict()
+
     def get_weight(self):
         """
         Return the weight of the layer
