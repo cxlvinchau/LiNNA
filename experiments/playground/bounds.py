@@ -9,6 +9,7 @@ from linna.utils import load_tf_network
 
 NUMERIC_SLACK = 0
 
+
 def lp_upper_bound(network: Network, layer_idx, neuron):
     basis = network.layers[layer_idx].basis
     weight = network.layers[layer_idx].get_weight().cpu().detach().numpy().T[:, basis]

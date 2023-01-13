@@ -8,6 +8,7 @@ from experiments.playground.marabou_utils import linna_to_marabou
 from linna.basis_finder import VarianceBasisFinder
 from linna.network import Network
 from linna.utils import load_tf_network
+import matplotlib.pyplot as plt
 import torch
 
 from tests.toy_network import create_toy_network
@@ -52,6 +53,14 @@ for layer_idx, layer in enumerate(linna_net.layers):
                 layer.neuron_to_upper_bound_term[neuron] = b
 
 cex = linna_to_marabou(linna_net, x=x, delta=DELTA, target=y[0].item())
+plt.matshow(cex.reshape((28, 28)))
+plt.show()
+
+plt.matshow(x.reshape((28, 28)))
+plt.show()
+
+print(np.max(cex - x.cpu().detach().numpy()))
+
 if cex is not None:
     print(y[0].item())
     print(type(cex))

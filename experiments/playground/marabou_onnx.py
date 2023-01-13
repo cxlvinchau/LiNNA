@@ -20,7 +20,7 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=False
 X, y = next(iter(trainloader))
 x = X[0].view(-1, 784)[0]
 
-DELTA = 0.05
+DELTA = 0.04
 
 # Export network
 sequential = load_tf_network(file="../networks/MNIST_5x100.tf")
