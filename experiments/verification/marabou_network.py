@@ -3,7 +3,7 @@ import sys
 from experiments.playground.marabou_utils import print_equation, print_relu_constr
 from linna.network import Network
 
-sys.path.append('/home/calvin/Documents/tools/Marabou')
+sys.path.append('/home/calvin/Repositories/Marabou')
 
 from maraboupy import MarabouCore
 from maraboupy import Marabou

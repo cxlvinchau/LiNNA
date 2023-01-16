@@ -13,16 +13,16 @@ import torch
 
 from tests.toy_network import create_toy_network
 
-sys.path.append('/home/calvin/Documents/tools/Marabou')
+sys.path.append('/home/calvin/Repositories/Marabou')
 
 transform = transforms.Compose([transforms.ToTensor()])
 trainset = datasets.MNIST('../datasets/MNIST/TRAINSET', download=False, train=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=False)
 
 X, y = next(iter(trainloader))
-x = X[0].view(-1, 784)[0]
+x = X[10].view(-1, 784)[0]
 
-DELTA = 0.05
+DELTA = 0.1
 
 from maraboupy import Marabou
 from maraboupy import MarabouCore
@@ -30,7 +30,7 @@ from maraboupy import MarabouCore
 options = Marabou.createOptions(verbosity=0)
 
 # Export network
-sequential = load_tf_network(file="../networks/MNIST_5x100.tf")
+sequential = load_tf_network(file="../networks/MNIST_3x100.tf")
 linna_net = Network(sequential)
 
 bf = VarianceBasisFinder(network=linna_net,
@@ -52,7 +52,7 @@ for layer_idx, layer in enumerate(linna_net.layers):
                 layer.neuron_to_upper_bound[neuron] = a
                 layer.neuron_to_upper_bound_term[neuron] = b
 
-cex = linna_to_marabou(linna_net, x=x, delta=DELTA, target=y[0].item())
+cex = linna_to_marabou(linna_net, x=x, delta=DELTA, target=y[10].item())
 plt.matshow(cex.reshape((28, 28)))
 plt.show()
 

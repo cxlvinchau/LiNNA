@@ -2,12 +2,13 @@ import sys
 
 from linna.network import Network
 
-sys.path.append('/home/calvin/Documents/tools/Marabou')
+sys.path.append('/home/calvin/Repositories/Marabou')
 
 from maraboupy import MarabouCore
 from maraboupy import Marabou
 
 import numpy as np
+OPTIONS = Marabou.createOptions()
 
 
 def print_equation(equation):
@@ -27,11 +28,8 @@ def print_relu_constr(t):
     print(f"x{t[1]} = ReLU({t[0]})")
 
 
-options = Marabou.createOptions()
-
-
-def linna_to_marabou(network: Network, x=None, delta=0, target=None) -> None:
-    inputQuery = MarabouCore.InputQuery()
+def get_input_query(network: Network):
+    ipq = MarabouCore.InputQuery()
     # Setup variables
     variables = []
     # Input variables
@@ -45,10 +43,7 @@ def linna_to_marabou(network: Network, x=None, delta=0, target=None) -> None:
 
     # Setup equations
     output_variables = []
-    debug_variables = []
     variable_pairs = []
-    debug_preactivations = []
-    debug_postactivations = []
 
     pre_activation_variables = input_variables
     post_activation_variables = input_variables
@@ -61,7 +56,7 @@ def linna_to_marabou(network: Network, x=None, delta=0, target=None) -> None:
         for neuron in layer.neurons:
             var = get_new_variable()
             # If neuron is in the basis
-            if neuron not in layer.neuron_to_lower_bound:
+            if neuron not in layer.neuron_to_lower_bound or True:
                 equation = MarabouCore.Equation()
                 new_pre_activation_variables.append(var)
                 for neuron_idx, in_var in enumerate(post_activation_variables):
@@ -71,19 +66,13 @@ def linna_to_marabou(network: Network, x=None, delta=0, target=None) -> None:
                 if idx < len(network.layers) - 1:
                     relu_var = get_new_variable()
                     new_post_activation_variables.append(relu_var)
-                    MarabouCore.addReluConstraint(inputQuery, var, relu_var)
+                    MarabouCore.addReluConstraint(ipq, var, relu_var)
                 else:
                     output_variables.append(var)
-                inputQuery.addEquation(equation)
+                ipq.addEquation(equation)
             else:
-                relu_var = get_new_variable()
                 new_pre_activation_variables.append(var)
-                new_post_activation_variables.append(relu_var)
-                equation = MarabouCore.Equation()
-                equation.addAddend(-1, var)
-                equation.addAddend(1, relu_var)
-                equation.setScalar(0)
-                inputQuery.addEquation(equation)
+                new_post_activation_variables.append(var)
 
             # Sanity check - All post activation variables are greater equals zero
             # for var in post_activation_variables:
@@ -105,17 +94,13 @@ def linna_to_marabou(network: Network, x=None, delta=0, target=None) -> None:
         for neuron, relu_var in zip(layer.neurons, post_activation_variables):
             if neuron in layer.neuron_to_lower_bound and idx < len(network.layers) - 1:
                 # Lower bound
-                equation = MarabouCore.Equation(MarabouCore.Equation.GE)
-                equation.setScalar(0)
-                equation.addAddend(1, post_activation_variables[neuron])
-                # Greater equals zero due to ReLU
                 equation = MarabouCore.Equation(MarabouCore.Equation.LE)
                 for basis_idx, basis_neuron in enumerate(layer.basis):
                     equation.addAddend(layer.neuron_to_lower_bound[neuron][basis_idx],
                                        pre_activation_variables[basis_neuron])
                 equation.addAddend(-1, post_activation_variables[neuron])
                 equation.setScalar(0)
-                inputQuery.addEquation(equation)
+                ipq.addEquation(equation)
 
                 # Upper bound
                 equation = MarabouCore.Equation(MarabouCore.Equation.GE)
@@ -128,69 +113,87 @@ def linna_to_marabou(network: Network, x=None, delta=0, target=None) -> None:
 
                 equation.addAddend(-1, post_activation_variables[neuron])
                 equation.setScalar(-layer.neuron_to_upper_bound_term[neuron][-1])
-                inputQuery.addEquation(equation)
+                ipq.addEquation(equation)
+
+                # Debug
+                # lower bound
+                debug_var_lb = get_new_variable()
+                # Greater equals zero due to ReLU
+                equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
+                for var_idx, in_var in enumerate(old_post_activations):
+                    equation.addAddend(layer.neuron_to_lower_bound_alt[neuron][0][var_idx], in_var)
+                equation.addAddend(-1, debug_var_lb)
+                equation.setScalar(-1 * layer.neuron_to_lower_bound_alt[neuron][1])
+                ipq.addEquation(equation)
+                # upper bound
+                debug_var_ub = get_new_variable()
+
+                equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
+                for var_idx, in_var in enumerate(old_post_activations):
+                    assert np.all(layer.neuron_to_upper_bound_alt[neuron][0] >= 0)
+                    equation.addAddend(layer.neuron_to_upper_bound_alt[neuron][0][var_idx], in_var)
+
+                equation.addAddend(-1, debug_var_ub)
+                print(layer.neuron_to_upper_bound_alt[neuron][1])
+                equation.setScalar(-layer.neuron_to_upper_bound_alt[neuron][1])
+                ipq.addEquation(equation)
+                variable_pairs.append((debug_var_lb, post_activation_variables[neuron], debug_var_ub))
 
                 free_variables.append(post_activation_variables[neuron])
 
-    inputQuery.setNumberOfVariables(len(variables))
-
-    print(len(input_variables))
-    for input_var in input_variables:
-        inputQuery.setLowerBound(input_var, x[input_var] - delta)
-        inputQuery.setUpperBound(input_var, x[input_var] + delta)
+    ipq.setNumberOfVariables(len(variables))
 
     i = 0
     for var in input_variables + free_variables:
-        inputQuery.markInputVariable(var, i)
+        ipq.markInputVariable(var, i)
+        if var in free_variables:
+            ipq.setLowerBound(var, 0)
         i += 1
 
     i = 0
     for output_var in output_variables:
-        inputQuery.markOutputVariable(output_var, i)
+        ipq.markOutputVariable(output_var, i)
         i += 1
 
     print(f"NUMBER of Variables: {len(variables)}")
     print(f"Out vars: {len(output_variables)}")
 
-    if target is not None:
-        print(f"TARGET: {target}")
-        target_var = output_variables[target]
-        for idx, output_var in enumerate(output_variables):
-            if idx != target:
-                equation = MarabouCore.Equation(MarabouCore.Equation.LE)
-                equation.addAddend(-1, output_var)
-                equation.addAddend(1, target_var)
-                equation.setScalar(0)
-                inputQuery.addEquation(equation)
+    return ipq, input_variables, output_variables, variable_pairs
 
-    status, result, stats = MarabouCore.solve(inputQuery, options)
-    print("===========================")
-    print(f"Total time: {stats.getTotalTimeInMicro()} ms")
-    print(status.upper())
-    if status == "sat":
-        for idx, var in enumerate(output_variables):
-            print(f"Out {idx}: {result[var]}")
 
-        return np.array([result[var] for var in input_variables])
+def evaluate_local_robustness(network: Network, x, delta, target_cls):
+    ipq, input_variables, output_variables, pairs = get_input_query(network)
 
-    # weight = network.layers[1].get_weight().cpu().detach().numpy()
-    # bias = network.layers[1].get_bias().cpu().detach().numpy()
-    # basis = network.layers[1].basis
-    # print("\n\n")
-    # for neuron, debug_var, relu_var in variable_pairs:
-    #     if neuron != 41 and False:
-    #         continue
-    #     coef = network.layers[1].neuron_to_lower_bound[neuron]
-    #     print(f"NEURON {neuron}")
-    #     print(debug_postactivations)
-    #     print(debug_var, relu_var)
-    #     print(f"{result[debug_var]} >= {result[relu_var]}")
-    #     value = 0
-    #     for idx, tmp_neuron in enumerate(debug_postactivations):
-    #         value += weight[neuron][idx] * result[tmp_neuron]
-    #     value += bias[neuron]
-    #     print(value)
-    #     print(np.all(np.matmul(weight.T[:, basis], coef) <= weight.T[:, neuron]))
-    #     print(np.all(np.matmul(bias[basis], coef) <= bias[neuron]))
-    #     print()
-    #     print()
+    for input_var in input_variables:
+        ipq.setLowerBound(input_var, x[input_var] - delta)
+        ipq.setUpperBound(input_var, x[input_var] + delta)
+
+    target_var = output_variables[target_cls]
+
+    for idx, output_var in enumerate(output_variables):
+        if idx != target_cls:
+            MarabouCore.addMaxConstraint(ipq, set([output_var, target_var]), output_var)
+            exitCode, vals, stats = MarabouCore.solve(ipq, options=OPTIONS)
+            print(80*"=")
+            print(f"Query for cls {idx}")
+            print(exitCode)
+            print(f"Total time: {stats.getTotalTimeInMicro()} microseconds")
+            if exitCode == "sat":
+                for cls, var in enumerate(output_variables):
+                    print(f"Output {cls}: {vals[var]}")
+
+                print(80 * "-")
+                print("Pair differencce")
+                diff = 0
+                for lb, var, ub in pairs:
+                    print(f"{max(vals[lb], 0)} <= {vals[var]} <= {vals[ub]}")
+                    # assert max(vals[lb], 0) <= vals[var] <= vals[ub]
+                    diff += vals[ub] - max(vals[lb], 0)
+                print(f"DIFF SUM: {diff}")
+                print(80 * "=" + "\n")
+                return vals, stats, idx
+
+            print(80*"=" + "\n")
+
+    return None, None, None
+

@@ -7,7 +7,6 @@ import numpy as np
 import copy
 
 from linna import utils
-from linna.utils import writeNNet
 
 
 class Network:
@@ -204,18 +203,6 @@ class Network:
                     break
         return torch.stack(outputs).cpu().detach().numpy()
 
-    def export_to_nnet(self, filename: str):
-        input_size = self.layers[0].get_weight().shape[1]
-        writeNNet(
-            weights=[layer.get_weight().cpu().detach().numpy() for layer in self.layers],
-            biases=[layer.get_bias().cpu().detach().numpy() for layer in self.layers],
-            inputMins=np.zeros(input_size),
-            inputMaxes=np.zeros(input_size),
-            means=np.zeros(input_size+1),
-            ranges=np.zeros(input_size+1),
-            fileName=filename
-        )
-
 
 class NetworkLayer:
 
@@ -254,8 +241,10 @@ class NetworkLayer:
 
         # Maps a neuron to its lower and upper bound linear combination
         self.neuron_to_lower_bound = dict()
+        self.neuron_to_lower_bound_alt = dict()
         self.neuron_to_upper_bound = dict()
         self.neuron_to_upper_bound_term = dict()
+        self.neuron_to_upper_bound_alt = dict()
 
     def get_weight(self):
         """

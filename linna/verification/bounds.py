@@ -33,6 +33,12 @@ def lp_upper_bound(network: Network, layer_idx, neuron):
     return np.float32(np.abs(result.x[:M.shape[1]])), np.float32(result.x[-M.shape[0]:])
 
 
+def lp_upper_bound_alternative(network: Network, layer_idx, neuron):
+    weight = network.layers[layer_idx].get_weight().cpu().detach().numpy()
+    bias = network.layers[layer_idx].get_bias().cpu().detach().numpy()
+    return np.maximum(weight[neuron, :], 0), np.maximum(bias[neuron], 0)
+
+
 def lp_lower_bound(network: Network, layer_idx, neuron):
     basis = network.layers[layer_idx].basis
     weight = network.layers[layer_idx].get_weight().cpu().detach().numpy().T[:, basis]
@@ -49,3 +55,9 @@ def lp_lower_bound(network: Network, layer_idx, neuron):
     c = np.concatenate((np.zeros(M.shape[1]), np.ones(M.shape[0])))
     result = linprog(c=c, A_eq=A_eq, b_eq=b_eq - NUMERIC_SLACK, bounds=bounds, method="highs")
     return np.float32(result.x[:M.shape[1]])
+
+
+def lp_lower_bound_alternative(network: Network, layer_idx, neuron):
+    weight = network.layers[layer_idx].get_weight().cpu().detach().numpy()
+    bias = network.layers[layer_idx].get_bias().cpu().detach().numpy()
+    return weight[neuron, :], bias[neuron]

@@ -5,3 +5,4 @@ venv
 tests/.pytest_cache
 docs/_autosummary
 docs/_build
+marabou_venv
