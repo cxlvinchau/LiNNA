@@ -54,7 +54,7 @@ class PosBasisFinder(_BasisFinder):
 
     def find_basis(self, layer_idx: int, basis_size: int, **parameters) -> List[int]:
         io_matrix: np.array = self.io_dict[layer_idx]
-        l = [(np.sum(io_matrix[:, neuron]), neuron) for neuron in self.network.layers[layer_idx].neurons]
+        l = [(np.sum(io_matrix[:, neuron] > 0), neuron) for neuron in self.network.layers[layer_idx].neurons]
         l.sort()
         return [neuron for _, neuron in l][:basis_size]
 
