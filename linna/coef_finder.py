@@ -120,23 +120,32 @@ class L2CoefFinder(_CoefFinder):
     def find_coefficients(self, layer_idx: int, neuron: int, **parameters) -> torch.Tensor:
         io_matrix = self.io_dict[layer_idx]
         basis = self.network.layers[layer_idx].basis
+        non_zero_basis = [neuron for neuron in basis if np.sum(np.abs(io_matrix[:, neuron])) > 0]
+        non_zeros_indices = [idx for idx, neuron in enumerate(basis) if np.sum(np.abs(io_matrix[:, neuron])) > 0]
         # Cache matrix
         if basis != self._basis:
-            A = io_matrix[:, basis]
+            A = io_matrix[:, non_zero_basis]
             X = np.linalg.inv(np.matmul(A.T, A))
             self._basis = basis
             self._inverse = X
-        A = io_matrix[:, basis]
+        A = io_matrix[:, non_zero_basis]
         X = np.matmul(self._inverse, np.matmul(A.T, io_matrix[:, neuron]))
-        return torch.Tensor(X)
+        coef = torch.zeros(len(basis))
+        coef[non_zeros_indices] = torch.Tensor(X)
+        return coef
 
     def find_all_coefficients(self, layer_idx: int, **parameters) -> Dict[int, torch.Tensor]:
         io_matrix = self.io_dict[layer_idx]
         basis = self.network.layers[layer_idx].basis
+        non_zero_basis = [neuron for neuron in basis if np.sum(np.abs(io_matrix[:, neuron])) > 0]
         non_basic = [neuron for neuron in self.network.layers[layer_idx].neurons if neuron not in basis]
-        A = io_matrix[:, basis]
+        A = io_matrix[:, non_zero_basis]
         X = torch.Tensor(np.matmul(np.linalg.inv(np.matmul(A.T, A)), np.matmul(A.T, io_matrix[:, non_basic])))
-        return {neuron: X[:, idx] for idx, neuron in enumerate(non_basic)}
+        coefs = {neuron: torch.zeros(len(basis)) for idx, neuron in enumerate(non_basic)}
+        non_zeros_indices = [idx for idx, neuron in enumerate(basis) if np.sum(np.abs(io_matrix[:, neuron])) > 0]
+        for idx, neuron in enumerate(non_basic):
+            coefs[neuron][non_zeros_indices] = X[:, idx]
+        return coefs
 
 
 class ClusteringCoefFinder(_CoefFinder):

@@ -97,7 +97,7 @@ class GreedyPruningBasisFinder(_BasisFinder):
                     if min_error is None or error < min_error:
                         min_error, best_neuron = error, neuron
                 except:
-                    continue
+                    best_neuron = neuron
             if best_neuron is None:
                 break
             basis.remove(best_neuron)
