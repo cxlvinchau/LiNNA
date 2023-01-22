@@ -112,7 +112,6 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
                     equation.addAddend(-1, ub_var)
                     ipq.addEquation(equation)
                 elif bounds_type == "semantic":
-                    print(bounds_type)
                     # Assert that information is available
                     assert params_dict is not None and "lb_epsilon" in params_dict and "ub_epsilon" in params_dict
                     assert params_dict["lb_epsilon"] >= 0 and params_dict["ub_epsilon"] >= 0
@@ -134,7 +133,6 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
                     equation.setScalar(-params_dict["ub_epsilon"])
                     equation.addAddend(-1, ub_var)
                     ipq.addEquation(equation)
-
                 else:
                     raise ValueError("Unknown bounds type!")
 
