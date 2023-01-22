@@ -203,6 +203,13 @@ class Network:
                     break
         return torch.stack(outputs).cpu().detach().numpy()
 
+    def propagate_interval(self, lb, ub, layer_idx=None):
+        for idx, layer in enumerate(self.layers):
+            lb, ub = layer.propagate_interval(lb, ub, apply_relu=idx < len(self.layers) - 1)
+            if layer_idx is not None and layer_idx == idx:
+                break
+        return lb, ub
+
 
 class NetworkLayer:
 
@@ -241,10 +248,8 @@ class NetworkLayer:
 
         # Maps a neuron to its lower and upper bound linear combination
         self.neuron_to_lower_bound = dict()
-        self.neuron_to_lower_bound_alt = dict()
         self.neuron_to_upper_bound = dict()
-        self.neuron_to_upper_bound_term = dict()
-        self.neuron_to_upper_bound_alt = dict()
+        self.neuron_to_upper_bound_affine_term = dict()
 
     def get_weight(self):
         """
@@ -490,3 +495,19 @@ class NetworkLayer:
             change = torch.matmul(diag.float(), mat.float()).float()
             self.change_matrix[:, idxs] = self.change_matrix[:, idxs] - change
             weight[:, idxs] = weight[:, idxs].float() - change[self.active_neurons]
+
+    def propagate_interval(self, lb, ub, apply_relu=True):
+        weight = self.get_weight().cpu().detach().numpy()
+        weight_pos = np.maximum(weight, 0)
+        weight_neg = np.minimum(weight, 0)
+        bias = self.get_bias().cpu().detach().numpy()
+
+        new_lb = np.matmul(weight_pos, lb) + np.matmul(weight_neg, ub) + bias
+        new_ub = np.matmul(weight_pos, ub) + np.matmul(weight_neg, lb) + bias
+
+        if apply_relu:
+            return np.maximum(new_lb, 0), np.maximum(new_ub, 0)
+
+        return new_lb, new_ub
+
+

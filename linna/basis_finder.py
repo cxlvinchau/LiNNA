@@ -56,7 +56,7 @@ class PosBasisFinder(_BasisFinder):
         io_matrix: np.array = self.io_dict[layer_idx]
         l = [(np.sum(io_matrix[:, neuron] > 0), neuron) for neuron in self.network.layers[layer_idx].neurons]
         l.sort()
-        return [neuron for _, neuron in l][:basis_size]
+        return [neuron for _, neuron in l][-basis_size:]
 
 
 class GreedyBasisFinder(_BasisFinder):

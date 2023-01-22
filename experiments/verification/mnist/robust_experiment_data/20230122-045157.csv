@@ -1,0 +1,15 @@
+,network,image_idx,target_cls,delta,linna_time (seconds),linna_timeout,linna_is_real_cex,linna_result,linna_error,marabou_time (seconds),marabou_timeout,marabou_result,marabou_error
+0,MNIST_3x100,0,5,0.02,601.6309296379995,True,,timeout,False,2.213924988999679,False,unsat,False
+1,MNIST_3x100,0,5,0.05,1.8819075889996384,False,True,sat,False,601.118844784999,True,timeout,False
+2,MNIST_3x100,1,0,0.02,601.6625557449988,True,,timeout,False,2.100089603000015,False,unsat,False
+3,MNIST_3x100,1,0,0.05,601.6181209160004,True,,timeout,False,601.109684557001,True,timeout,False
+4,MNIST_3x100,2,4,0.02,601.6003017219991,True,,timeout,False,601.0715319679985,True,timeout,False
+5,MNIST_3x100,2,4,0.05,1.9342585829999734,False,False,sat,False,601.1230866959995,True,timeout,False
+6,MNIST_3x100,3,1,0.02,601.6521271329984,True,,timeout,False,2464.3060526379995,False,unsat,False
+7,MNIST_3x100,3,1,0.05,1.0563529000010021,False,False,sat,False,601.098158584,True,timeout,False
+8,MNIST_3x100,4,9,0.02,601.661573677,True,,timeout,False,601.1121923930004,True,timeout,False
+9,MNIST_3x100,4,9,0.05,1.9533233799993468,False,True,sat,False,601.1584997819991,True,timeout,False
+10,MNIST_3x100,5,2,0.02,601.6202120969974,True,,timeout,False,9.298167468001338,False,unsat,False
+11,MNIST_3x100,5,2,0.05,1.1351059689986869,False,True,sat,False,601.2441809769989,True,timeout,False
+12,MNIST_3x100,6,1,0.02,601.6050844139972,True,,timeout,False,601.0730989229996,True,timeout,False
+13,MNIST_3x100,6,1,0.05,1.2333054639966576,False,True,sat,False,601.1704084099983,True,timeout,False
