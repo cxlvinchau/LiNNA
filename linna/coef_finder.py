@@ -107,7 +107,7 @@ class L1CoefFinder(_CoefFinder):
                 return self._find_coefficients_scipy(layer_idx=layer_idx, neuron=neuron)
             raise ValueError(f"Unsupported solver {self.params['solver']}")
 
-        return self._find_coefficients_gurobi(layer_idx=layer_idx, neuron=neuron)
+        return self._find_coefficients_scipy(layer_idx=layer_idx, neuron=neuron)
 
 
 class L2CoefFinder(_CoefFinder):

@@ -1,3 +1,7 @@
+import sys
+sys.path.append('/home/calvin/Repositories/Marabou')
+sys.path.append('/home/calvin/Repositories/LiNNA')
+
 from linna.basis_finder import _BasisFinder, PosBasisFinder
 from linna.network import Network
 import torch
@@ -15,7 +19,6 @@ import numpy as np
 
 from torchvision import datasets, transforms
 
-sys.path.append('/home/calvin/Repositories/Marabou')
 from maraboupy import MarabouCore
 from maraboupy import Marabou
 
@@ -66,7 +69,7 @@ def is_real_cex(network: Network, cex: torch.Tensor, target_cls: int):
 if __name__ == "__main__":
     # Experiment parameters
     DELTAS = [0.02, 0.05]
-    MARABOU_TIMEOUT = 10 * 60  # seconds
+    MARABOU_TIMEOUT = 10  # seconds
     NETWORKS = ["MNIST_3x100"]
     BASIS_SIZES = [None, 95, 90]
 

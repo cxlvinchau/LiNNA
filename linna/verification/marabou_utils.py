@@ -27,7 +27,7 @@ def print_relu_constr(t):
     print(f"x{t[1]} = ReLU({t[0]})")
 
 
-def get_input_query(network: Network):
+def get_input_query(network: Network, bounds_type="syntactic", params_dict=None):
     ipq = MarabouCore.InputQuery()
     # Setup variables
     variables = []
@@ -85,28 +85,58 @@ def get_input_query(network: Network):
         # Compute equations for bounds
         for neuron, relu_var in zip(layer.neurons, post_activation_variables):
             if neuron in layer.neuron_to_upper_bound and idx < len(network.layers) - 1:
-                # Lower bound
+                # Create bound variables
                 lb_var = get_new_variable()
-                equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
-                for var_idx, in_var in enumerate(old_post_activations):
-                    equation.addAddend(layer.neuron_to_lower_bound[neuron][0][var_idx], in_var)
-                equation.addAddend(-1, lb_var)
-                equation.setScalar(-1 * layer.neuron_to_lower_bound[neuron][1])
-                ipq.addEquation(equation)
-
-                # Upper bound
                 ub_var = get_new_variable()
-                equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
-                for basis_idx, basis_neuron in enumerate(layer.basis):
-                    equation.addAddend(layer.neuron_to_upper_bound[neuron][basis_idx],
-                                       post_activation_variables[basis_neuron])
 
-                for input_idx, input_var in enumerate(old_post_activations):
-                    equation.addAddend(layer.neuron_to_upper_bound_affine_term[neuron][input_idx], input_var)
+                # Syntactic overapproximation
+                if bounds_type == "syntactic":
+                    # Lower bound equation
+                    equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
+                    for var_idx, in_var in enumerate(old_post_activations):
+                        equation.addAddend(layer.neuron_to_lower_bound[neuron][0][var_idx], in_var)
+                    equation.addAddend(-1, lb_var)
+                    equation.setScalar(-1 * layer.neuron_to_lower_bound[neuron][1])
+                    ipq.addEquation(equation)
 
-                equation.setScalar(-layer.neuron_to_upper_bound_affine_term[neuron][-1])
-                equation.addAddend(-1, ub_var)
-                ipq.addEquation(equation)
+                    # Upper bound equation
+                    equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
+                    for basis_idx, basis_neuron in enumerate(layer.basis):
+                        equation.addAddend(layer.neuron_to_upper_bound[neuron][basis_idx],
+                                        post_activation_variables[basis_neuron])
+
+                    for input_idx, input_var in enumerate(old_post_activations):
+                        equation.addAddend(layer.neuron_to_upper_bound_affine_term[neuron][input_idx], input_var)
+
+                    equation.setScalar(-layer.neuron_to_upper_bound_affine_term[neuron][-1])
+                    equation.addAddend(-1, ub_var)
+                    ipq.addEquation(equation)
+                elif bounds_type == "semantic":
+                    print(bounds_type)
+                    # Assert that information is available
+                    assert params_dict is not None and "lb_epsilon" in params_dict and "ub_epsilon" in params_dict
+                    assert params_dict["lb_epsilon"] >= 0 and params_dict["ub_epsilon"] >= 0
+                    
+                    # Lower bound equation
+                    equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
+                    for basis_idx, basis_neuron in enumerate(layer.basis):
+                        basis_var = post_activation_variables[basis_neuron]
+                        equation.addAddend(layer.neuron_to_coef[neuron][basis_idx], basis_var)
+                    equation.setScalar(params_dict["lb_epsilon"])
+                    equation.addAddend(-1, lb_var)
+                    ipq.addEquation(equation)
+                    
+                    # Upper bound equation
+                    equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
+                    for basis_idx, basis_neuron in enumerate(layer.basis):
+                        basis_var = post_activation_variables[basis_neuron]
+                        equation.addAddend(layer.neuron_to_coef[neuron][basis_idx], basis_var)
+                    equation.setScalar(-params_dict["ub_epsilon"])
+                    equation.addAddend(-1, ub_var)
+                    ipq.addEquation(equation)
+
+                else:
+                    raise ValueError("Unknown bounds type!")
 
                 # Constraint the neurons not in the basis
                 # LB
@@ -142,8 +172,8 @@ def get_input_query(network: Network):
     return ipq, input_variables, output_variables, pairs
 
 
-def evaluate_local_robustness(network: Network, x, delta, target_cls, marabou_options):
-    ipq, input_variables, output_variables, pairs = get_input_query(network)
+def evaluate_local_robustness(network: Network, x, delta, target_cls, marabou_options, bounds_type="syntactic", params_dict=None):
+    ipq, input_variables, output_variables, pairs = get_input_query(network, bounds_type=bounds_type, params_dict=params_dict)
 
     for input_var in input_variables:
         ipq.setLowerBound(input_var, x[input_var] - delta)

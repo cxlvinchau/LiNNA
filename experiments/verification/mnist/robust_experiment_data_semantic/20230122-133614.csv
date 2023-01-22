@@ -1,0 +1,2 @@
+,network,image_idx,target_cls,delta,linna_error
+0,MNIST_3x100,0,5,0.05,True
