@@ -2,7 +2,7 @@ from typing import Dict
 
 import torch
 
-from linna.network import Network
+from src.network import Network
 from sklearn.cluster import AgglomerativeClustering
 import numpy as np
 from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances

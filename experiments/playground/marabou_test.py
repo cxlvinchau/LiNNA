@@ -2,8 +2,8 @@ import sys, os
 import numpy as np
 from torchvision import datasets, transforms
 
-from linna.network import Network
-from linna.utils import load_tf_network
+from src.network import Network
+from src.utils import load_tf_network
 import torch
 
 import onnx

@@ -4,7 +4,7 @@ with open("requirements.txt") as file:
     requirements = file.readlines()
 
 setup(
-    name='linna',
+    name='src',
     version='0.0.1',
     description="Python library for abstracting feed-forward neural networks",
     author="Calvin Chau, Stefanie Mohr, Jan Křetı́nský",

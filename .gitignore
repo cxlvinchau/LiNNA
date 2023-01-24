@@ -5,3 +5,5 @@ venv
 tests/.pytest_cache
 docs/_autosummary
 docs/_build
+*egg*
+build

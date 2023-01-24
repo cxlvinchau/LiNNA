@@ -1,6 +1,6 @@
 import torch
 
-from linna.coef_finder import L1CoefFinder, L2CoefFinder, ClusteringCoefFinder
+from src.coef_finder import L1CoefFinder, L2CoefFinder, ClusteringCoefFinder
 from tests.toy_network import create_toy_network
 
 import pytest

@@ -3,9 +3,9 @@ from scipy.optimize import linprog
 from scipy.sparse import identity, hstack, coo_matrix, lil_matrix
 import numpy as np
 
-from linna.basis_finder import VarianceBasisFinder
-from linna.network import Network
-from linna.utils import load_tf_network
+from src.basis_finder import VarianceBasisFinder
+from src.network import Network
+from src.utils import load_tf_network
 
 
 def lp_upper_bound(network: Network, layer_idx, neuron):

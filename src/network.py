@@ -6,8 +6,8 @@ from torch import nn
 import numpy as np
 import copy
 
-from linna import utils
-from linna.utils import writeNNet
+from src import utils
+from src.utils import writeNNet
 
 
 class Network:
@@ -408,7 +408,7 @@ class NetworkLayer:
         self.neuron_to_coef[neuron] = coef
         with torch.no_grad():
             diag = torch.diag(self.original_weight[:, neuron])
-            mat = torch.tensor(coef.clone().detach()).repeat(diag.shape[1], 1)
+            mat = coef.clone().detach().repeat(diag.shape[1], 1)
             weight = self.get_weight()
             idxs = self._get_input_index(self.input_basis)
             change = torch.matmul(diag.float(), mat.float()).float()

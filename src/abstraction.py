@@ -3,10 +3,10 @@ from typing import Literal, Dict, Any, Optional
 import numpy as np
 import torch
 
-from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder, ClusteringBasisFinder, RandomBasisFinder, \
+from src.basis_finder import GreedyBasisFinder, VarianceBasisFinder, ClusteringBasisFinder, RandomBasisFinder, \
     GreedyPruningBasisFinder
-from linna.coef_finder import L1CoefFinder, L2CoefFinder, ClusteringCoefFinder, DummyCoefFinder
-from linna.network import Network
+from src.coef_finder import L1CoefFinder, L2CoefFinder, ClusteringCoefFinder, DummyCoefFinder
+from src.network import Network
 
 from torch.utils.data.dataloader import DataLoader
 

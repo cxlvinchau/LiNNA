@@ -1,7 +1,7 @@
 import torch
 
-from linna.coef_finder import L1CoefFinder, L2CoefFinder
-from linna.refinement import DifferenceRefinement, LookaheadRefinement
+from src.coef_finder import L1CoefFinder, L2CoefFinder
+from src.refinement import DifferenceRefinement, LookaheadRefinement
 from tests.toy_network import create_toy_network
 
 import pytest

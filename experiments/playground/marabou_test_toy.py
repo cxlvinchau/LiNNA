@@ -2,8 +2,8 @@ import sys, os
 import numpy as np
 
 from experiments.playground.marabou_utils import print_equation, print_relu_constr
-from linna.network import Network
-from linna.utils import load_tf_network
+from src.network import Network
+from src.utils import load_tf_network
 import torch
 
 import onnx

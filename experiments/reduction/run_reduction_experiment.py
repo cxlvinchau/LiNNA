@@ -2,9 +2,9 @@ from typing import Dict, Any
 
 import numpy as np
 
-from linna.abstraction import Abstraction
-from linna.bisimulation import Bisimulation
-from linna.network import Network
+from src.abstraction import Abstraction
+from src.bisimulation import Bisimulation
+from src.network import Network
 
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
@@ -17,7 +17,7 @@ import logging
 
 from timeit import default_timer as timer
 
-from linna.utils import get_accuracy, load_tf_network
+from src.utils import get_accuracy, load_tf_network, load_model
 
 
 def run_bisimulation(testset: Dataset, network_path: str):
@@ -41,7 +41,10 @@ def run_bisimulation(testset: Dataset, network_path: str):
     rows = []
     for delta in [i * 0.05 for i in range(1, 25)]:
         # Load trained neural network
-        sequential = load_tf_network(file=network_path)
+        if network_path.endswith(".tf"):
+            sequential = load_tf_network(file=network_path)
+        else:
+            sequential = load_model(path=network_path)[0]
         network = Network(torch_model=sequential)
         # Compute IO matrices
         io_dict = dict()
@@ -121,3 +124,16 @@ def run_reduction_experiment(network: str, trainset: Dataset, testset: Dataset,
 
     df = pd.DataFrame(rows)
     return df
+
+
+if __name__=="__main__":
+    # Load MNIST dataset
+    # Set to true to download MNIST data set
+    DOWNLOAD = False
+    # Get training data
+    transform = transforms.Compose([transforms.ToTensor()])
+    # Get data
+    trainset = datasets.MNIST('../datasets/MNIST/TRAINSET', download=DOWNLOAD, train=True, transform=transform)
+    testset = datasets.MNIST('../datasets/MNIST/TESTSET', download=DOWNLOAD, train=False, transform=transform)
+    run_reduction_experiment("../networks/MNIST_3x100.tf",trainset, testset,"variance","l1" )
+    run_bisimulation(testset, "../networks/MNIST3x100")

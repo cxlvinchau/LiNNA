@@ -4,7 +4,7 @@ from typing import Dict, Any
 import torch
 from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances
 
-from linna.network import Network
+from src.network import Network
 import gurobipy as gb
 from gurobipy import GRB
 from scipy.sparse import identity, hstack, coo_matrix, lil_matrix

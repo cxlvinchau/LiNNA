@@ -4,10 +4,10 @@ from typing import Dict, Optional, Tuple, List
 import numpy as np
 from torch import nn
 
-from linna import utils
-from linna.network import Network
+from src import utils
+from src.network import Network
 import torch
-from linna.utils import forward
+from src.utils import forward
 
 
 class _RefinementStrategy(abc.ABC):

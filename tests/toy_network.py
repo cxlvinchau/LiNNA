@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from linna.network import Network
+from src.network import Network
 
 
 def create_toy_network():

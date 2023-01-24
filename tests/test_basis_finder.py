@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from linna.basis_finder import VarianceBasisFinder, GreedyBasisFinder, ClusteringBasisFinder
+from src.basis_finder import VarianceBasisFinder, GreedyBasisFinder, ClusteringBasisFinder
 from tests.toy_network import create_toy_network
 
 

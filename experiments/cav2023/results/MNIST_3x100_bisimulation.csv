@@ -1,0 +1,5 @@
+,model_name,reduction_method,basis_finding,reduction_rate,test_acc,timestamp,data
+0,MNIST3x100,bisimulation,none,0.0,0.9764,2023-01-24-10-32-16-330809,MNIST
+1,MNIST3x100,bisimulation,none,0.0,0.9764,2023-01-24-10-32-18-689792,MNIST
+2,MNIST3x100,bisimulation,none,0.0,0.9764,2023-01-24-10-32-25-615010,MNIST
+3,MNIST3x100,bisimulation,none,0.013333333333333308,0.9764,2023-01-24-10-32-32-725780,MNIST

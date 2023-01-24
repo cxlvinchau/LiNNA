@@ -3,7 +3,7 @@ import unittest
 import torch
 from torch import nn
 
-from linna.network import Network
+from src.network import Network
 from tests.toy_network import create_toy_network
 
 

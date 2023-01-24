@@ -9,7 +9,7 @@ from sklearn.cluster import KMeans, DBSCAN
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances
 
-from linna.network import Network
+from src.network import Network
 
 
 class _BasisFinder(abc.ABC):
