@@ -16,7 +16,7 @@ COEF_FINDER = Literal["l1", "l2", "kmeans", "clustering", "dummy"]
 
 class Abstraction:
 
-    def __init__(self, network: Network, basis_finder: BASIS_FINDER, coef_finder: COEF_FINDER, loader: DataLoader,
+    def __init__(self, network: Network, basis_finder: BASIS_FINDER, coef_finder: COEF_FINDER, syntactic=False, loader: DataLoader = None,
                  size: int = 1000, coef_params: Optional[Dict[str, Any]] = None):
         """
         Initializes the abstraction object
@@ -29,6 +29,8 @@ class Abstraction:
             The basis finder that should be used, possible values are ``greedy`` or ``variance``
         coef_finder: str
             The coef finder that should be used, possible values are ``l1`` or ``l2``
+        io_dict: Dict
+            A dictionary mapping layer indices to matrices
         loader: DataLoader
             The data loader for the data that is used for computing the IO matrices
         size: int
@@ -42,8 +44,16 @@ class Abstraction:
         self.io_dict = dict()
 
         # Compute IO matrices
-        for layer in range(len(self.network.layers)):
-            self.io_dict[layer]: np.ndarray = self.network.get_io_matrix(loader=loader, layer_idx=layer, size=size)
+        if not syntactic:
+            # If not syntactic then compute IO matrices
+            assert loader is not None, "If io_dict is not provided, a loader has to be specified"
+            for layer_idx in range(len(self.network.layers)):
+                self.io_dict[layer_idx]: np.ndarray = self.network.get_io_matrix(loader=loader, layer_idx=layer_idx, size=size)
+        else:
+            # Syntactic, then use weight matrices
+            for layer_idx, layer in enumerate(self.network.layers):
+                self.io_dict[layer_idx]: np.ndarray = layer.get_weight().cpu().detach().numpy().T
+
 
         # Initialize basis finder
         if basis_finder == "greedy":
