@@ -17,15 +17,17 @@ def loader():
 
 @pytest.mark.parametrize("basis_finder", ["variance", "greedy", "kmeans", "dbscan", "random"])
 @pytest.mark.parametrize("coef_finder", ["l1", "l2", "clustering", "dummy"])
+@pytest.mark.parametrize("syntactic", [True, False])
 class TestAbstraction:
 
-    def test_abstract(self, basis_finder, coef_finder, network, loader):
+    def test_abstract(self, basis_finder, coef_finder, syntactic, network, loader):
         abstraction = Abstraction(
             network=network,
             basis_finder=basis_finder,
             coef_finder=coef_finder,
             loader=loader,
-            size=4
+            size=4,
+            syntactic=syntactic
         )
         abstraction.determine_basis(layer_idx=0, basis_size=2)
         abstraction.abstract(layer_idx=0)
