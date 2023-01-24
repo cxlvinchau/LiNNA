@@ -58,7 +58,7 @@ def run_bisimulation_experiments(network_path, trainset, testset, dataset):
 
 
 def run_reduction_experiment(network_path: str, trainset: Dataset, testset: Dataset, dataset : str,
-                             basis_finder: str, coef_finder: str, coef_params: Dict[str, Any] = None, resolution=10):
+                             basis_finder: str, coef_finder: str, coef_params: Dict[str, Any] = None, resolution=20, syntactic=False):
     """
     Runs the reduction experiment
 
@@ -106,7 +106,8 @@ def run_reduction_experiment(network_path: str, trainset: Dataset, testset: Data
                                   basis_finder=basis_finder,
                                   coef_finder=coef_finder,
                                   coef_params=coef_params,
-                                  loader=trainloader)
+                                  loader=trainloader,
+                                  syntactic=syntactic)
         for layer_idx in range(len(abstraction.network.layers) - 1):
             basis_size = int(len(abstraction.network.layers[layer_idx].neurons) * rr)
             abstraction.determine_basis(layer_idx=layer_idx, basis_size=basis_size)
@@ -139,6 +140,10 @@ def run_linna_lp_greedy_semantic(network_path, trainset, testset, dataset : str)
     return run_reduction_experiment(network_path, trainset, testset, dataset, "greedy", "l1")
 def run_linna_lp_var_semantic(network_path, trainset, testset, dataset : str):
     return run_reduction_experiment(network_path, trainset, testset, dataset, "variance", "l1")
+
+def run_linna_op_var_syntactic(network_path, trainset, testset, dataset : str):
+    return run_reduction_experiment(network_path, trainset, testset, dataset, "variance", "l2",syntactic=True)
+
 
 for dataset in pDatasets:
     DOWNLOAD = False
@@ -200,7 +205,14 @@ for dataset in pDatasets:
             print(f" with {dataset} and {network} in LiNNA-variance-lp-semantic!")
             print(f" {e}")
 
-        #run_linna_op_var_syntactic()
+        try:
+            df = run_linna_op_var_syntactic(f"{dataset}{network}", trainset, testset, dataset)
+            df.to_csv(resultFolder+f"{dataset}_{network}_linna-variance-op_syntactic.csv")
+        except Exception as e:
+            print("!!! ERROR !!!")
+            print(f" with {dataset} and {network} in LiNNA-variance-op-syntactic!")
+            print(f" {e}")
+
         ## If time allows, do that as well, but probably not
         #run_linna_op_greedy_syntactic()
         #run_linna_lp_var_syntactic()
