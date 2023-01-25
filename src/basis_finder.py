@@ -56,9 +56,9 @@ class GreedyBasisFinder(_BasisFinder):
         io_matrix: np.ndarray = self.io_dict[layer_idx]
         n = self.network.layers[layer_idx].get_weight().size(dim=0)
         basis = []
-        min_error, best_neuron = None, None
         for _ in range(basis_size):
             candidates = [i for i in range(n) if i not in basis]
+            min_error, best_neuron = None, None
             if random_choice:
                 candidates = self.rng.choice(candidates, min(len(candidates), 100), replace=False)
             for neuron in candidates:
