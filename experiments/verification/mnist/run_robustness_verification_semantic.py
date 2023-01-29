@@ -69,18 +69,18 @@ def compute_io_dict(network: Network, loader):
 
 if __name__ == "__main__":
     # Experiment parameters
-    DELTAS = [0.05]
+    DELTAS = [0.02, 0.05]
     MARABOU_TIMEOUT = 10 * 60  # seconds
     NETWORKS = ["MNIST_3x100"]
     BASIS_SIZES = [None, 95, 90]
-    BOUNDS = [(0.1, 0.1), (0.05, 0.05), (0.025, 0.025)]
+    BOUNDS = [(3, 3), (0, 0)]
 
     # Load dataset
     transform = transforms.Compose([transforms.ToTensor()])
     trainset = datasets.MNIST(
         '../../datasets/MNIST/TRAINSET', download=False, train=True, transform=transform)
     trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=10, shuffle=False)
+        trainset, batch_size=50, shuffle=False)
 
     # Get first batch
     X, Y = next(iter(trainloader))
@@ -105,55 +105,61 @@ if __name__ == "__main__":
                     row["image_idx"] = idx
                     row["target_cls"] = target_cls
                     row["delta"] = delta
+                    row["bounds"] = (lb_epsilon, ub_epsilon)
 
-                    # Run verification with LiNNA
-                    # ===========================
-                    sequential = load_tf_network(
-                        file=f"../../networks/{network}.tf")
-                    linna_net = Network(sequential)
+                    try:
+                        # Run verification with LiNNA
+                        # ===========================
+                        sequential = load_tf_network(
+                            file=f"../../networks/{network}.tf")
+                        linna_net = Network(sequential)
 
-                    # Start of computation
-                    start = timer()
-                    io_transform = transforms.Compose([transforms.ToTensor()])
-                    io_set = datasets.MNIST('../../datasets/MNIST/TRAINSET', download=False, train=True, transform=io_transform)
-                    io_loader = torch.utils.data.DataLoader(
-                        io_set, batch_size=64, shuffle=True)
-                    io_dict = compute_io_dict(
-                        network=linna_net, loader=io_loader)
-                    bf = VarianceBasisFinder(network=linna_net,
-                                             io_dict=io_dict)
-                    cf = L1CoefFinder(network=linna_net,
-                                      io_dict=io_dict)
-                    marabou_options = Marabou.createOptions(verbosity=0,
-                                                            timeoutInSeconds=MARABOU_TIMEOUT)
-                    cex, stats, max_class = run_linna_semantic(network=linna_net, x=x.view(-1, 784)[0],
-                                                               target_cls=target_cls,
-                                                               delta=delta,
-                                                               bf=bf,
-                                                               cf=cf,
-                                                               basis_sizes=BASIS_SIZES,
-                                                               marabou_options=marabou_options,
-                                                               lb_epsilon=lb_epsilon,
-                                                               ub_epsilon=ub_epsilon
-                                                               )
-                    end = timer()
-                    # End of computation
+                        # Start of computation
+                        start = timer()
+                        io_transform = transforms.Compose([transforms.ToTensor()])
+                        io_set = datasets.MNIST('../../datasets/MNIST/TRAINSET', download=False, train=True, transform=io_transform)
+                        io_loader = torch.utils.data.DataLoader(
+                            io_set, batch_size=64, shuffle=True)
+                        io_dict = compute_io_dict(
+                            network=linna_net, loader=io_loader)
+                        bf = VarianceBasisFinder(network=linna_net,
+                                                io_dict=io_dict)
+                        cf = L1CoefFinder(network=linna_net,
+                                        io_dict=io_dict)
+                        marabou_options = Marabou.createOptions(verbosity=0,
+                                                                timeoutInSeconds=MARABOU_TIMEOUT)
+                        cex, stats, max_class = run_linna_semantic(network=linna_net, x=x.view(-1, 784)[0],
+                                                                target_cls=target_cls,
+                                                                delta=delta,
+                                                                bf=bf,
+                                                                cf=cf,
+                                                                basis_sizes=BASIS_SIZES,
+                                                                marabou_options=marabou_options,
+                                                                lb_epsilon=lb_epsilon,
+                                                                ub_epsilon=ub_epsilon
+                                                                )
+                        end = timer()
+                        # End of computation
 
-                    row["linna_time (seconds)"] = end - start
-                    row["linna_timeout"] = stats == "timeout"
-                    row["linna_is_real_cex"] = None
-                    if cex is not None:
-                        row["linna_result"] = "sat"
-                        row["linna_is_real_cex"] = is_real_cex(network=linna_net,
-                                                               cex=torch.Tensor(
-                                                                   [cex[i] for i in range(784)]),
-                                                               target_cls=target_cls)
-                    elif stats == "timeout":
-                        row["linna_result"] = "timeout"
-                    else:
-                        row["linna_result"] = "unsat"
+                        row["linna_time (seconds)"] = end - start
+                        row["linna_timeout"] = stats == "timeout"
+                        row["linna_is_real_cex"] = None
+                        row["linna_cex"] = None
+                        if cex is not None:
+                            row["linna_result"] = "sat"
+                            row["linna_is_real_cex"] = is_real_cex(network=linna_net,
+                                                                cex=torch.Tensor(
+                                                                    [cex[i] for i in range(784)]),
+                                                                target_cls=target_cls)
+                            row["linna_cex"] = [cex[i] for i in range(784)]
+                        elif stats == "timeout":
+                            row["linna_result"] = "timeout"
+                        else:
+                            row["linna_result"] = "unsat"
 
-                    row["linna_error"] = False
+                        row["linna_error"] = False
+                    except:
+                        row["linna_error"] = True
 
                     rows.append(pd.Series(row))
 
@@ -162,5 +168,3 @@ if __name__ == "__main__":
                     timestr = time.strftime("%Y%m%d-%H%M%S")
                     df = pd.DataFrame(rows)
                     df.to_csv(f"robust_experiment_data_semantic/{timestr}.csv")
-
-                    sys.exit(0)

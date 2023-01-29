@@ -55,7 +55,8 @@ def run_linna(network: Network, x: torch.Tensor, target_cls: int, delta: float, 
                                                       x=x.cpu().detach().numpy(),
                                                       delta=delta,
                                                       target_cls=target_cls,
-                                                      marabou_options=marabou_options)
+                                                      marabou_options=marabou_options,
+                                                      bounds_type="syntactic")
 
     return cex, stats, max_class
 
@@ -69,14 +70,14 @@ def is_real_cex(network: Network, cex: torch.Tensor, target_cls: int):
 if __name__ == "__main__":
     # Experiment parameters
     DELTAS = [0.02, 0.05]
-    MARABOU_TIMEOUT = 10  # seconds
+    MARABOU_TIMEOUT = 10 * 60 # seconds
     NETWORKS = ["MNIST_3x100"]
     BASIS_SIZES = [None, 95, 90]
 
     # Load dataset
     transform = transforms.Compose([transforms.ToTensor()])
     trainset = datasets.MNIST('../../datasets/MNIST/TRAINSET', download=False, train=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=10, shuffle=False)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=60, shuffle=False)
 
     # Get first batch
     X, Y = next(iter(trainloader))
@@ -129,8 +130,10 @@ if __name__ == "__main__":
                     row["linna_time (seconds)"] = end - start
                     row["linna_timeout"] = stats == "timeout"
                     row["linna_is_real_cex"] = None
+                    row["linna_cex"] = None
                     if cex is not None:
                         row["linna_result"] = "sat"
+                        row["linna_cex"] = [cex[i] for i in range(784)]
                         row["linna_is_real_cex"] = is_real_cex(network=linna_net,
                                                                cex=torch.Tensor([cex[i] for i in range(784)]),
                                                                target_cls=target_cls)
@@ -167,11 +170,16 @@ if __name__ == "__main__":
 
                     row["marabou_time (seconds)"] = end - start
                     row["marabou_timeout"] = stats.hasTimedOut()
+                    row["marabou_cex"] = None
                     if stats.hasTimedOut():
                         row["marabou_result"] = "timeout"
                     elif result is None or len(result) == 0:
                         row["marabou_result"] = "unsat"
                     else:
+                        try:
+                            row["marabou_cex"] = [result[i] for i in range(784)]
+                        except:
+                            print("Could not save cex for Marabou".upper())
                         row["marabou_result"] = "sat"
                     row["marabou_error"] = False
                 except:
