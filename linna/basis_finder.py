@@ -65,8 +65,8 @@ class GreedyBasisFinder(_BasisFinder):
         io_matrix: np.ndarray = self.io_dict[layer_idx]
         n = self.network.layers[layer_idx].get_weight().size(dim=0)
         basis = []
-        min_error, best_neuron = None, None
         for _ in range(basis_size):
+            min_error, best_neuron = None, None
             candidates = [i for i in range(n) if i not in basis]
             if random_choice:
                 candidates = self.rng.choice(candidates, min(len(candidates), 100), replace=False)
@@ -106,7 +106,7 @@ class GreedyPruningBasisFinder(_BasisFinder):
                     if min_error is None or error < min_error:
                         min_error, best_neuron = error, neuron
                 except:
-                    continue
+                    best_neuron = neuron
             if best_neuron is None:
                 break
             basis.remove(best_neuron)

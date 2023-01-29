@@ -1,6 +1,7 @@
 import abc
 from typing import Dict, Any
 
+import gurobipy
 import torch
 from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances
 
@@ -137,6 +138,32 @@ class L2CoefFinder(_CoefFinder):
         A = io_matrix[:, basis]
         X = torch.Tensor(np.matmul(np.linalg.inv(np.matmul(A.T, A)), np.matmul(A.T, io_matrix[:, non_basic])))
         return {neuron: X[:, idx] for idx, neuron in enumerate(non_basic)}
+
+
+class LInfinityCoefFinder(_CoefFinder):
+
+    def find_coefficients(self, layer_idx: int, neuron: int) -> torch.Tensor:
+        io_matrix = self.io_dict[layer_idx]
+        io_matrix_basic = io_matrix[:, self.network.layers[layer_idx].basis]
+        target = io_matrix[:, neuron]
+        m = gurobipy.Model()
+
+        # Create variables
+        l_infty = m.addVar()  # Variable corresponding to infinity norm
+        z = m.addMVar(io_matrix_basic.shape[0])
+        alpha = m.addMVar(io_matrix_basic.shape[1], lb=-GRB.INFINITY, ub=GRB.INFINITY)
+
+        # Add constraints
+        m.addConstr(z >= io_matrix_basic @ alpha - target)
+        m.addConstr(z >= target - io_matrix_basic @ alpha)
+        for z_prime in z:
+            m.addConstr(l_infty >= z_prime)
+
+        # Set objective and optimize
+        m.setObjective(l_infty, sense=GRB.MINIMIZE)
+        m.optimize()
+
+        return torch.Tensor(alpha.x)
 
 
 class ClusteringCoefFinder(_CoefFinder):

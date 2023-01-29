@@ -133,7 +133,6 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
                     equation.setScalar(-params_dict["ub_epsilon"])
                     equation.addAddend(-1, ub_var)
                     ipq.addEquation(equation)
-
                 else:
                     raise ValueError("Unknown bounds type!")
 
