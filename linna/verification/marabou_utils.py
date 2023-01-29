@@ -84,7 +84,7 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
 
         # Compute equations for bounds
         for neuron, relu_var in zip(layer.neurons, post_activation_variables):
-            if neuron in layer.neuron_to_upper_bound and idx < len(network.layers) - 1:
+            if (neuron in layer.neuron_to_upper_bound or neuron in layer.neuron_to_coef) and idx < len(network.layers) - 1:
                 # Create bound variables
                 lb_var = get_new_variable()
                 ub_var = get_new_variable()
@@ -112,7 +112,6 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
                     equation.addAddend(-1, ub_var)
                     ipq.addEquation(equation)
                 elif bounds_type == "semantic":
-                    print(bounds_type)
                     # Assert that information is available
                     assert params_dict is not None and "lb_epsilon" in params_dict and "ub_epsilon" in params_dict
                     assert params_dict["lb_epsilon"] >= 0 and params_dict["ub_epsilon"] >= 0
