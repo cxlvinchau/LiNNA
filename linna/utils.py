@@ -156,3 +156,9 @@ def nnet_to_torch(network: NNet):
         if idx < last_layer:
             layers.append(nn.ReLU())
     return nn.Sequential(*layers)
+
+
+def is_real_cex(network, cex: torch.Tensor, target_cls: int):
+    out = network.forward(cex).cpu().detach().numpy()
+    max_classes = np.argwhere(out == np.max(out)).reshape(-1).tolist()
+    return target_cls not in max_classes or len(max_classes) > 1
