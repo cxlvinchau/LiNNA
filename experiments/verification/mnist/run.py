@@ -99,7 +99,7 @@ def run_linna_two_bounds(config: ExperimentConfig):
                                                 timeoutInSeconds=config.timeout)
 
         cex, stats, max_class = evaluate_local_robustness(network=linna_net,
-                                                          x=config.x.cpu().detach().numpy(),
+                                                          x=config.x.view(-1, 784)[0].cpu().detach().numpy(),
                                                           delta=config.delta,
                                                           target_cls=config.image_cls,
                                                           marabou_options=marabou_options,
@@ -158,7 +158,7 @@ def linna_run_one_bound(config: ExperimentConfig):
                                                 timeoutInSeconds=config.timeout)
 
         cex, stats, max_class = evaluate_local_robustness(network=linna_net,
-                                                          x=config.x.cpu().detach().numpy(),
+                                                          x=config.x.view(-1, 784)[0].cpu().detach().numpy(),
                                                           delta=config.delta,
                                                           target_cls=config.image_cls,
                                                           marabou_options=marabou_options,

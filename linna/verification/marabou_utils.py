@@ -27,7 +27,7 @@ def print_relu_constr(t):
     print(f"x{t[1]} = ReLU({t[0]})")
 
 
-def get_input_query(network: Network, bounds_type="syntactic", params_dict=None):
+def get_input_query(network: Network, bounds_type="syntactic"):
     ipq = MarabouCore.InputQuery()
     # Setup variables
     variables = []
@@ -166,8 +166,8 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
     return ipq, input_variables, output_variables, pairs
 
 
-def evaluate_local_robustness(network: Network, x, delta, target_cls, marabou_options, bounds_type="syntactic", params_dict=None):
-    ipq, input_variables, output_variables, pairs = get_input_query(network, bounds_type=bounds_type, params_dict=params_dict)
+def evaluate_local_robustness(network: Network, x, delta, target_cls, marabou_options, bounds_type="syntactic"):
+    ipq, input_variables, output_variables, pairs = get_input_query(network, bounds_type=bounds_type)
 
     for input_var in input_variables:
         ipq.setLowerBound(input_var, x[input_var] - delta)
