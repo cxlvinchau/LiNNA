@@ -1,2 +1,0 @@
-,network,image_idx,target_cls,delta,linna_time (seconds),linna_timeout,linna_is_real_cex,linna_result,linna_error
-0,MNIST_3x100,0,5,0.05,7.996746107994113,False,,unsat,False

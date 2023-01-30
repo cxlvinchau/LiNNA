@@ -1,3 +1,0 @@
-,network,image_idx,target_cls,delta,linna_time (seconds),linna_timeout,linna_is_real_cex,linna_result,linna_error,marabou_time (seconds),marabou_timeout,marabou_result,marabou_error
-0,MNIST_3x100,0,5,0.02,11.622809193999274,True,,timeout,False,2.1957071060023736,False,unsat,False
-1,MNIST_3x100,0,5,0.05,1.8699461680007516,False,True,sat,False,,,,True

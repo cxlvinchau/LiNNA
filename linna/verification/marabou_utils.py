@@ -84,7 +84,7 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
 
         # Compute equations for bounds
         for neuron, relu_var in zip(layer.neurons, post_activation_variables):
-            if neuron in layer.neuron_to_upper_bound and idx < len(network.layers) - 1:
+            if (neuron in layer.neuron_to_upper_bound or neuron in layer.neuron_to_coef) and idx < len(network.layers) - 1:
                 # Create bound variables
                 lb_var = get_new_variable()
                 ub_var = get_new_variable()
