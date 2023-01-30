@@ -70,10 +70,10 @@ def compute_io_dict(network: Network, loader):
 if __name__ == "__main__":
     # Experiment parameters
     DELTAS = [0.02, 0.05]
-    MARABOU_TIMEOUT = 10 * 60  # seconds
+    MARABOU_TIMEOUT = 4 * 60  # seconds
     NETWORKS = ["MNIST_3x100"]
     BASIS_SIZES = [None, 95, 90]
-    BOUNDS = [(3, 3), (0, 0)]
+    BOUNDS = [(0, 0)]
 
     # Load dataset
     transform = transforms.Compose([transforms.ToTensor()])

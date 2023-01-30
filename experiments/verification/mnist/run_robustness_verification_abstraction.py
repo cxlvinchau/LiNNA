@@ -1,10 +1,9 @@
 import sys
 
-from linna.abstraction import Abstraction
-
 sys.path.append('/home/calvin/Repositories/Marabou')
 sys.path.append('/home/calvin/Repositories/LiNNA')
 
+from linna.abstraction import Abstraction
 from linna.basis_finder import _BasisFinder, PosBasisFinder
 from linna.network import Network
 import torch
@@ -12,8 +11,6 @@ import sys
 from timeit import default_timer as timer
 import pandas as pd
 import time
-
-start = timer()
 
 from linna.utils import load_tf_network, is_real_cex
 from linna.verification.bounds import lp_upper_bound
@@ -50,7 +47,7 @@ if __name__ == "__main__":
             for rr in REDUCTION_RATES:
                 for delta in DELTAS:
                     print(51 * "=")
-                    print(f"Configuration: {network}, img_idx: {idx}, delta: {delta}".upper())
+                    print(f"Configuration: {network}, img_idx: {idx}, delta: {delta}, rr: {rr}".upper())
                     print(51 * "=")
                     print("")
 
@@ -93,20 +90,32 @@ if __name__ == "__main__":
 
                         # End of computation
                         row["linna_time (seconds)"] = end - start
-                        row["linna_timeout"] = stats == "timeout"
+                        row["linna_timeout"] = stats.hasTimedOut()
                         row["linna_is_real_cex"] = None
-                        if cex is not None:
-                            row["linna_result"] = "sat"
-                            row["linna_is_real_cex"] = is_real_cex(network=linna_net,
-                                                                   cex=torch.Tensor([cex[i] for i in range(784)]),
-                                                                   target_cls=target_cls)
-                        elif stats == "timeout":
+                        row["linna_cex"] = None
+                        if stats.hasTimedOut():
                             row["linna_result"] = "timeout"
-                        else:
+                        elif cex is None or len(cex) == 0:
                             row["linna_result"] = "unsat"
+                        else:
+                            try:
+                                sequential = load_tf_network(file=f"../../networks/{network}.tf")
+                                linna_net = Network(sequential)
+                                row["linna_is_real_cex"] = is_real_cex(network=linna_net,
+                                                                    cex=torch.Tensor(
+                                                                        [cex[i] for i in range(784)]),
+                                                                    target_cls=target_cls)
+                            except:
+                                print("Could not check cex")
 
+                            try:
+                                row["linna_cex"] = [cex[i] for i in range(784)]
+                            except:
+                                print("Could not save cex for LiNNA/Marabou".upper())
+                            row["linna_result"] = "sat"
                         row["linna_error"] = False
-                    except:
+                    except Exception as e:
+                        print(e)
                         row["linna_error"] = True
 
                     rows.append(pd.Series(row))
