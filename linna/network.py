@@ -238,6 +238,8 @@ class NetworkLayer:
 
         # Store linear combinations (note that this is done for the input)
         self.neuron_to_coef = dict()
+        self.neuron_to_coef_lb = dict()
+        self.neuron_to_coef_ub = dict()
 
         # Store basis of previous layer
         self.input_basis = None

@@ -112,16 +112,12 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
                     equation.addAddend(-1, ub_var)
                     ipq.addEquation(equation)
                 elif bounds_type == "semantic":
-                    # Assert that information is available
-                    assert params_dict is not None and "lb_epsilon" in params_dict and "ub_epsilon" in params_dict
-                    assert params_dict["lb_epsilon"] >= 0 and params_dict["ub_epsilon"] >= 0
-                    
                     # Lower bound equation
                     equation = MarabouCore.Equation(MarabouCore.Equation.EQ)
                     for basis_idx, basis_neuron in enumerate(layer.basis):
                         basis_var = post_activation_variables[basis_neuron]
                         equation.addAddend(layer.neuron_to_coef[neuron][basis_idx], basis_var)
-                    equation.setScalar(params_dict["lb_epsilon"])
+                    equation.setScalar(-layer.neuron_to_coef_lb[neuron])
                     equation.addAddend(-1, lb_var)
                     ipq.addEquation(equation)
                     
@@ -130,7 +126,7 @@ def get_input_query(network: Network, bounds_type="syntactic", params_dict=None)
                     for basis_idx, basis_neuron in enumerate(layer.basis):
                         basis_var = post_activation_variables[basis_neuron]
                         equation.addAddend(layer.neuron_to_coef[neuron][basis_idx], basis_var)
-                    equation.setScalar(-params_dict["ub_epsilon"])
+                    equation.setScalar(-layer.neuron_to_coef_ub[neuron])
                     equation.addAddend(-1, ub_var)
                     ipq.addEquation(equation)
                 else:

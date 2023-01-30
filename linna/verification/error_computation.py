@@ -89,7 +89,7 @@ def compute_guaranteed_bounds(network: Network, x: torch.Tensor, epsilon: float,
                               method="backward"):
     """
     Computes the bounds for difference between the linear combination and neuron, i.e.
-    it finds lb and ub such that: lb <= lin_comb - neuron <= ub
+    it finds lb and ub such that: lb <= neuron - lin_comb <= ub
     """
     layers = list(network.original_torch_model[:(layer_idx + 1) * 2])
     out_dim = len(network.layers[layer_idx].neurons)
@@ -100,8 +100,8 @@ def compute_guaranteed_bounds(network: Network, x: torch.Tensor, epsilon: float,
     with torch.no_grad():
         aux_layer.weight = torch.nn.Parameter(torch.zeros(aux_layer.weight.shape))
         aux_layer.bias = torch.nn.Parameter(torch.zeros(aux_layer.bias.shape))
-        aux_layer.weight[0][basis] = network.layers[layer_idx].neuron_to_coef[target_neuron]
-        aux_layer.weight[0][target_neuron] -= 1
+        aux_layer.weight[0][basis] = -1 * network.layers[layer_idx].neuron_to_coef[target_neuron]
+        aux_layer.weight[0][target_neuron] += 1
     layers.append(aux_layer)
 
     aux_sequential = torch.nn.Sequential(*layers)
@@ -118,5 +118,7 @@ def compute_guaranteed_bounds(network: Network, x: torch.Tensor, epsilon: float,
             best_lb = lb
         if best_ub is None or ub < best_ub:
             best_ub = ub
+
+    assert best_lb <= best_ub
 
     return best_lb.cpu().detach().numpy()[0][0], best_ub.cpu().detach().numpy()[0][0]

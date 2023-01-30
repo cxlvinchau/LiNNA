@@ -1,0 +1,1 @@
+## Experiment data for linna with two linear combinations

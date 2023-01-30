@@ -1,5 +1,4 @@
 import sys
-
 sys.path.append('/home/calvin/Repositories/Marabou')
 sys.path.append('/home/calvin/Repositories/LiNNA')
 
@@ -24,13 +23,8 @@ from maraboupy import MarabouCore
 from maraboupy import Marabou
 
 
-def run_linna_two_combinations(network_name: str, x: torch.Tensor, target_cls: int, delta: float, bf: _BasisFinder,
-                               reduction_rate,
-                               marabou_options):
-
-    sequential = load_tf_network(file=f"../../networks/{network_name}.tf")
-    network = Network(sequential)
-
+def run_linna(network: Network, x: torch.Tensor, target_cls: int, delta: float, bf: _BasisFinder, reduction_rate,
+              marabou_options):
     def abstract(layer_idx, basis_size):
         layer = network.layers[layer_idx]
         weight = layer.get_weight().cpu().detach().numpy()
@@ -64,10 +58,11 @@ def run_linna_two_combinations(network_name: str, x: torch.Tensor, target_cls: i
     return cex, stats, max_class
 
 
+
 if __name__ == "__main__":
     # Experiment parameters
     DELTAS = [0.02, 0.05]
-    MARABOU_TIMEOUT = 10 * 60  # seconds
+    MARABOU_TIMEOUT = 10 * 60 # seconds
     NETWORKS = ["MNIST_3x100"]
     BASIS_SIZES = [None, 95, 90]
 
@@ -101,6 +96,8 @@ if __name__ == "__main__":
                 # Run verification with LiNNA
                 # ===========================
                 try:
+                    sequential = load_tf_network(file=f"../../networks/{network}.tf")
+                    linna_net = Network(sequential)
 
                     # Start of computation
                     start = timer()
@@ -139,43 +136,6 @@ if __name__ == "__main__":
                     row["linna_error"] = False
                 except:
                     row["linna_error"] = True
-
-                # Run verification with Marabou only
-                # ==================================
-                try:
-                    # Export network
-                    sequential = load_tf_network(file=f"../../networks/{network}.tf")
-                    linna_net = Network(sequential)
-                    torch.onnx.export(linna_net.torch_model, x.view(-1, 784), "tmp/model.onnx")
-
-                    marabou_net = Marabou.read_onnx("tmp/model.onnx")
-
-                    target_cls = y.item()
-
-                    marabou_options = Marabou.createOptions(verbosity=0,
-                                                            timeoutInSeconds=MARABOU_TIMEOUT)
-
-                    start = timer()
-                    result, stats, max_class = marabou_net.evaluateLocalRobustness(
-                        x.view(-1, 784)[0].cpu().detach().numpy(), delta, target_cls, options=marabou_options)
-                    end = timer()
-
-                    row["marabou_time (seconds)"] = end - start
-                    row["marabou_timeout"] = stats.hasTimedOut()
-                    row["marabou_cex"] = None
-                    if stats.hasTimedOut():
-                        row["marabou_result"] = "timeout"
-                    elif result is None or len(result) == 0:
-                        row["marabou_result"] = "unsat"
-                    else:
-                        try:
-                            row["marabou_cex"] = [result[i] for i in range(784)]
-                        except:
-                            print("Could not save cex for Marabou".upper())
-                        row["marabou_result"] = "sat"
-                    row["marabou_error"] = False
-                except:
-                    row["marabou_error"] = True
 
                 rows.append(pd.Series(row))
 

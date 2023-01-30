@@ -17,7 +17,7 @@ from linna.verification.error_computation import compute_difference_milp, comput
 # LiNNA setup
 sequential = load_tf_network(file="../../networks/MNIST_5x100.tf")
 linna_net = Network(sequential)
-LAYER_IDX = 4
+LAYER_IDX = 2
 IMG_IDX = 0
 print(sequential)
 
@@ -72,4 +72,3 @@ for neuron in non_basic:
 
 print(lb_sum/len(non_basic))
 print(ub_sum/len(non_basic))
-print(diff/len(non_basic))
