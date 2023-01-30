@@ -146,8 +146,8 @@ def linna_run_one_bound(config: ExperimentConfig):
                 if neuron not in layer.basis:
                     layer.neuron_to_coef[neuron] = cf.find_coefficients(
                         layer_idx=layer_idx, neuron=neuron)
-                    lb, ub = compute_guaranteed_bounds(linna_net, x=config.x, epsilon=config.delta, layer_idx=layer_idx,
-                                                       target_neuron=neuron)
+                    lb, ub = compute_guaranteed_bounds(linna_net, x=config.x.view(-1, 784)[0], epsilon=config.delta,
+                                                       layer_idx=layer_idx, target_neuron=neuron)
                     layer.neuron_to_coef_lb[neuron] = lb
                     layer.neuron_to_coef_ub[neuron] = ub
 
