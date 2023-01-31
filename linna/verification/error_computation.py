@@ -107,7 +107,7 @@ def compute_guaranteed_bounds(network: Network, x: torch.Tensor, epsilon: float,
     aux_sequential = torch.nn.Sequential(*layers)
 
     x = x.unsqueeze(0)
-    bm = BoundedModule(aux_sequential, x)
+    bm = BoundedModule(aux_sequential, x, bound_opts={'sparse_features_alpha': False})
     ptb = PerturbationLpNorm(norm=np.inf, eps=epsilon)
     my_input = BoundedTensor(x, ptb)
     best_lb, best_ub = None, None
