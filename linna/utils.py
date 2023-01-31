@@ -159,6 +159,6 @@ def nnet_to_torch(network: NNet):
 
 
 def is_real_cex(network, cex: torch.Tensor, target_cls: int):
-    out = network.forward(cex).cpu().detach().numpy()
+    out = network.forward(cex).cpu().detach().numpy().reshape(-1)
     max_classes = np.argwhere(out == np.max(out)).reshape(-1).tolist()
     return target_cls not in max_classes or len(max_classes) > 1
