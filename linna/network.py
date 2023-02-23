@@ -216,6 +216,11 @@ class Network:
             fileName=filename
         )
 
+    def update_torch_model(self):
+        for layer_idx in self.torch_model._modules:
+            if type(self.torch_model._modules[layer_idx]) == torch.nn.Linear:
+                self.torch_model._modules[layer_idx].in_features = self.torch_model._modules[layer_idx].weight.shape[1]
+                self.torch_model._modules[layer_idx].out_features = self.torch_model._modules[layer_idx].weight.shape[0]
 
 class NetworkLayer:
 

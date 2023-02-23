@@ -34,7 +34,7 @@ class TestBasisFinder(unittest.TestCase):
     def test_greedy_basis_finder_all(self):
         finder = GreedyBasisFinder(network=self.network, io_dict=self.io_dict)
         bases = finder.find_bases(reduction_rate=0.5)
-        self.assertEqual([[0, 2], [2]], bases)
+        self.assertEqual([[0], [0, 1]], bases)
 
     def test_greedy_pruning_basis_finder(self):
         finder = GreedyPruningBasisFinder(network=self.network, io_dict=self.io_dict)

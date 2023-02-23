@@ -62,6 +62,7 @@ class _BasisFinder(abc.ABC):
         """
         pass
 
+
 class VarianceBasisFinder(_BasisFinder):
 
     def find_basis(self, layer_idx: int, basis_size: int, **parameters) -> List[int]:
@@ -72,30 +73,29 @@ class VarianceBasisFinder(_BasisFinder):
 
     def find_bases(self, reduction_rate: confloat(ge=0.0, le=1.0), normalized=True) -> List[List[int]]:
         variances = []
-        for layer_idx in range(len(self.network.layers)-1):
+        for layer_idx in range(len(self.network.layers) - 1):
             io_matrix: np.ndarray = self.io_dict[layer_idx]
             variance = np.var(io_matrix, axis=0)
             if normalized:
-                variance = normalize(variance.reshape(1,-1))[0]
-            layer_indices = np.ones_like(variance)*int(layer_idx)
-            neuron_indices = np.arange(0,len(variance))
-            variances.extend(list(zip(variance,layer_indices, neuron_indices)))
+                variance = normalize(variance.reshape(1, -1))[0]
+            layer_indices = np.ones_like(variance) * int(layer_idx)
+            neuron_indices = np.arange(0, len(variance))
+            variances.extend(list(zip(variance, layer_indices, neuron_indices)))
         variances.sort()
-        num_neurons = ceil(len(variances)*reduction_rate)
+        num_neurons = ceil(len(variances) * (1 - reduction_rate))
         selected_neurons = variances[-num_neurons:]
         bases = []
-        for layer_idx in range(len(self.network.layers)-1):
-            basis = [el[2] for el in selected_neurons if el[1]==layer_idx]
-            if len(basis)==0:
-                basis = [max([el[2] for el in variances if el[1]==layer_idx])]
+        for layer_idx in range(len(self.network.layers) - 1):
+            basis = [el[2] for el in selected_neurons if el[1] == layer_idx]
+            if len(basis) == 0:
+                basis = [max([el[2] for el in variances if el[1] == layer_idx])]
             bases.append(basis)
         return bases
 
 
-
 class GreedyBasisFinder(_BasisFinder):
 
-    def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None, seed:int = 42):
+    def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None, seed: int = 42):
         super().__init__(network, io_dict)
         self.rng = np.random.default_rng(seed)
 
@@ -125,26 +125,50 @@ class GreedyBasisFinder(_BasisFinder):
         return basis
 
     def find_bases(self, reduction_rate: confloat(ge=0.0, le=1.0), random_choice=False) -> List[List[int]]:
-        num_to_delete = ceil(self.network.get_num_neurons()*reduction_rate)
-        bases = [list(range(self.network.layers[layer_idx].get_weight().size(dim=0))) for layer_idx in range(len(self.network.layers)-1)]
-        deleted = 0
-        for layer_idx in range(len(self.network.layers)-1):
-            io_matrix: np.ndarray = self.io_dict[layer_idx]
-            _, not_ignore = sympy.Matrix(io_matrix).T.rref()
-            deleted += len(bases[layer_idx])-len(list(not_ignore))
-            bases[layer_idx] = list(not_ignore)
+        num_to_add = ceil(self.network.get_num_neurons() * (1-reduction_rate))
+        bases = [[] for layer_idx in range(len(self.network.layers) - 1)]
 
-        for _ in range(deleted, num_to_delete):
+        # add at least one neuron per layer
+        min_error, best_neuron = None, None
+        for layer_idx in range(len(self.network.layers) - 1):
+            io_matrix: np.ndarray = self.io_dict[layer_idx]
+            basis = bases[layer_idx]
+            n = self.network.layers[layer_idx].get_weight().size(dim=0)
+            candidates = [i for i in range(n) if i not in basis]
+            if random_choice:
+                candidates = self.rng.choice(candidates, min(len(candidates), 100), replace=False)
+            for neuron in candidates:
+                tmp_basis = basis + [neuron]
+                if len(tmp_basis) < 1:
+                    continue
+                tmp_basis.remove(neuron)
+                try:
+                    A = io_matrix[:, tmp_basis]
+                    X = np.matmul(np.linalg.inv(np.matmul(A.T, A)), np.matmul(A.T, io_matrix))
+                    # Compute projection error
+                    error = np.sum((io_matrix - np.matmul(A, X)) ** 2)
+                    if min_error is None or error < min_error:
+                        min_error, best_neuron = error, neuron
+                except:
+                    continue
+            bases[layer_idx].append(best_neuron)
+            num_to_add -= 1
+
+        if num_to_add <0:
+            return bases
+
+        for _ in range(num_to_add):
             min_error, best_neuron, best_layer = None, None, None
-            for layer_idx in range(len(self.network.layers)-1):
+            for layer_idx in range(len(self.network.layers) - 1):
                 io_matrix: np.ndarray = self.io_dict[layer_idx]
                 basis = bases[layer_idx]
-                candidates = [i for i in basis]
+                n = self.network.layers[layer_idx].get_weight().size(dim=0)
+                candidates = [i for i in range(n) if i not in basis]
                 if random_choice:
                     candidates = self.rng.choice(candidates, min(len(candidates), 100), replace=False)
                 for neuron in candidates:
-                    tmp_basis = [i for i in bases[layer_idx]]
-                    if len(tmp_basis)<=1:
+                    tmp_basis = basis + [neuron]
+                    if len(tmp_basis) < 1:
                         continue
                     tmp_basis.remove(neuron)
                     try:
@@ -158,12 +182,13 @@ class GreedyBasisFinder(_BasisFinder):
                         continue
             if best_layer is None:
                 break
-            bases[best_layer].remove(best_neuron)
+            bases[best_layer].append(best_neuron)
         return bases
+
 
 class GreedyPruningBasisFinder(_BasisFinder):
 
-    def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None, seed:int = 42):
+    def __init__(self, network: Network = None, io_dict: Dict[int, np.ndarray] = None, seed: int = 42):
         super().__init__(network, io_dict)
         self.rng = np.random.default_rng(seed)
 
@@ -194,15 +219,10 @@ class GreedyPruningBasisFinder(_BasisFinder):
     def find_bases(self, reduction_rate: confloat(ge=0.0, le=1.0), random_choice=False) -> List[List[int]]:
         num_to_delete = ceil(self.network.get_num_neurons() * reduction_rate)
         bases = [list(range(self.network.layers[layer_idx].get_weight().size(dim=0))) for layer_idx in
-                 range(len(self.network.layers)-1)]
-        deleted = 0
-        for layer_idx in range(len(self.network.layers) - 1):
-            io_matrix: np.ndarray = self.io_dict[layer_idx]
-            _, not_ignore = sympy.Matrix(io_matrix).T.rref()
-            deleted += len(bases[layer_idx]) - len(list(not_ignore))
-            bases[layer_idx] = list(not_ignore)
+                 range(len(self.network.layers) - 1)]
 
-        for _ in range(deleted, num_to_delete):
+        deleted = 0
+        while (deleted<num_to_delete):
             min_error, best_neuron, best_layer = None, None, None
             for layer_idx in range(len(self.network.layers) - 1):
                 io_matrix: np.ndarray = self.io_dict[layer_idx]
@@ -223,11 +243,15 @@ class GreedyPruningBasisFinder(_BasisFinder):
                         if min_error is None or error < min_error:
                             min_error, best_neuron, best_layer = error, neuron, layer_idx
                     except:
-                        continue
+                        _, not_ignore = sympy.Matrix(io_matrix).T.rref()
+                        deleted += len(bases[layer_idx]) - len(list(not_ignore))
+                        bases[layer_idx] = [i for i in bases[layer_idx] if i in list(not_ignore)]
             if best_layer is None:
                 break
             bases[best_layer].remove(best_neuron)
+            deleted+=1
         return bases
+
 
 class ClusteringBasisFinder(_BasisFinder):
 
@@ -288,10 +312,11 @@ class ClusteringBasisFinder(_BasisFinder):
     def find_bases(self, reduction_rate: confloat(ge=0.0, le=1.0)) -> List[List[int]]:
         bases = []
         for layer_idx in range(len(self.network.layers) - 1):
-            basis_size = floor(self.network.layers[layer_idx].get_weight().size(dim=0)*reduction_rate)
+            basis_size = floor(self.network.layers[layer_idx].get_weight().size(dim=0) * (1 - reduction_rate))
             basis = self.find_basis(layer_idx, basis_size=basis_size)
             bases.append(basis)
         return bases
+
 
 class RandomBasisFinder(_BasisFinder):
 
@@ -301,7 +326,7 @@ class RandomBasisFinder(_BasisFinder):
     def find_bases(self, reduction_rate: confloat(ge=0.0, le=1.0)) -> List[List[int]]:
         bases = []
         for layer_idx in range(len(self.network.layers) - 1):
-            basis_size = floor(self.network.layers[layer_idx].get_weight().size(dim=0)*reduction_rate)
+            basis_size = floor(self.network.layers[layer_idx].get_weight().size(dim=0) * (1 - reduction_rate))
             basis = self.find_basis(layer_idx, basis_size=basis_size)
             bases.append(basis)
         return bases

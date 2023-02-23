@@ -133,6 +133,7 @@ class Abstraction:
         for neuron in non_basic:
             self.network.delete_neuron(layer_idx=layer_idx, neuron=neuron)
             self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=coefs[neuron])
+        self.network.update_torch_model()
 
     def refine(self, cex: torch.Tensor):
         """
