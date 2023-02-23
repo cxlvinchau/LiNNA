@@ -1,4 +1,5 @@
 from typing import Literal, Dict, Any, Optional
+from pydantic import confloat
 
 import numpy as np
 import torch
@@ -86,6 +87,14 @@ class Abstraction:
     def get_reduction_rate(self):
         return 1 - (self.network.get_num_neurons()/self.original_number_of_neurons)
 
+    def determine_bases(self, reduction_rate: confloat(ge=0.0, le=1.0)):
+        assert(0 <= reduction_rate <= 1)
+        bases = self.basis_finder.find_bases(reduction_rate=reduction_rate)
+        if bases is None:
+            return
+        for layer_idx in range(len(self.network.layers)-1):
+            self.network.set_basis(layer_idx, bases[layer_idx])
+
     def determine_basis(self, layer_idx: int, basis_size: int = 1000):
         """
         Determines the basis for the given layer
@@ -100,6 +109,11 @@ class Abstraction:
         """
         basis = self.basis_finder.find_basis(layer_idx=layer_idx, basis_size=basis_size)
         self.network.set_basis(layer_idx, basis)
+
+
+    def abstract_all(self, **coef_params):
+        for layer_idx in range(len(self.network.layers)-1):
+            self.abstract(layer_idx, **coef_params)
 
     def abstract(self, layer_idx: int, **coef_params):
         """

@@ -11,7 +11,7 @@ from scipy.sparse import identity, hstack, coo_matrix, lil_matrix
 import numpy as np
 
 from scipy.optimize import linprog
-
+import sympy
 
 class _CoefFinder(abc.ABC):
     """Reduction base class"""
@@ -137,12 +137,13 @@ class L2CoefFinder(_CoefFinder):
     def find_all_coefficients(self, layer_idx: int, **parameters) -> Dict[int, torch.Tensor]:
         io_matrix = self.io_dict[layer_idx]
         basis = self.network.layers[layer_idx].basis
-        non_zero_basis = [neuron for neuron in basis if np.sum(np.abs(io_matrix[:, neuron])) > 0]
+        _, not_ignore = sympy.Matrix(io_matrix).T.rref()
+        non_zero_basis = [neuron for neuron in basis if neuron in not_ignore]
         non_basic = [neuron for neuron in self.network.layers[layer_idx].neurons if neuron not in basis]
         A = io_matrix[:, non_zero_basis]
         X = torch.Tensor(np.matmul(np.linalg.inv(np.matmul(A.T, A)), np.matmul(A.T, io_matrix[:, non_basic])))
         coefs = {neuron: torch.zeros(len(basis)) for idx, neuron in enumerate(non_basic)}
-        non_zeros_indices = [idx for idx, neuron in enumerate(basis) if np.sum(np.abs(io_matrix[:, neuron])) > 0]
+        non_zeros_indices = [idx for idx, neuron in enumerate(basis) if neuron in not_ignore]
         for idx, neuron in enumerate(non_basic):
             coefs[neuron][non_zeros_indices] = X[:, idx]
         return coefs
