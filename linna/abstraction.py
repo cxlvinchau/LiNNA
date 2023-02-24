@@ -3,6 +3,7 @@ from pydantic import confloat
 
 import numpy as np
 import torch
+from math import ceil
 
 from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder, ClusteringBasisFinder, RandomBasisFinder, \
     GreedyPruningBasisFinder
@@ -11,7 +12,7 @@ from linna.network import Network
 
 from torch.utils.data.dataloader import DataLoader
 
-BASIS_FINDER = Literal["greedy", "variance", "kmeans", "dbscan", "random"]
+BASIS_FINDER = Literal["greedy", "greedy_pruning", "variance", "kmeans", "dbscan", "random"]
 COEF_FINDER = Literal["l1", "l2", "kmeans", "clustering", "dummy"]
 
 
@@ -94,6 +95,11 @@ class Abstraction:
             return
         for layer_idx in range(len(self.network.layers)-1):
             self.network.set_basis(layer_idx, bases[layer_idx])
+
+    def determine_basis_rr(self, layer_idx: int, reduction_rate: float):
+        n = len(self.network.layers[layer_idx].active_neurons)
+        basis_size = ceil(n*reduction_rate)
+        self.determine_basis(layer_idx, basis_size)
 
     def determine_basis(self, layer_idx: int, basis_size: int = 1000):
         """
