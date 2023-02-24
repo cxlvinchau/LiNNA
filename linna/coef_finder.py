@@ -5,8 +5,6 @@ import torch
 from sklearn.metrics import pairwise_distances_argmin_min, pairwise_distances
 
 from linna.network import Network
-import gurobipy as gb
-from gurobipy import GRB
 from scipy.sparse import identity, hstack, coo_matrix, lil_matrix
 import numpy as np
 
@@ -66,6 +64,8 @@ class _CoefFinder(abc.ABC):
 class L1CoefFinder(_CoefFinder):
 
     def _find_coefficients_gurobi(self, layer_idx: int, neuron: int):
+        import gurobipy as gb
+        from gurobipy import GRB
         io_matrix = self.io_dict[layer_idx][:, self.network.layers[layer_idx].basis]
         with gb.Env(empty=True) as env:
             env.setParam("LogToConsole", 0)
