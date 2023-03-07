@@ -12,6 +12,8 @@ sys.path.insert(0, os.path.abspath('../'))
 
 project = 'LiNNA'
 copyright = '2022, Calvin Chau, Stefanie Mohr and Jan Křetı́nský'
+if "GITHUB_SHA" in os.environ:
+    copyright += f", Commit: {os.environ['GITHUB_SHA']}"
 author = 'Calvin Chau, Stefanie Mohr, Jan Křetı́nský'
 
 # -- General configuration ---------------------------------------------------
@@ -42,3 +44,5 @@ autodoc_default_options = {
     'exclude-members': '__weakref__',
     'inherited-members': True
 }
+
+autodoc_mock_imports = ["torch"]
