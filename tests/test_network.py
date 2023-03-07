@@ -4,7 +4,7 @@ import torch
 from torch import nn
 
 from linna.network import Network
-from tests.toy_network import create_toy_network
+from toy_network import create_toy_network
 
 
 class TestNetwork(unittest.TestCase):

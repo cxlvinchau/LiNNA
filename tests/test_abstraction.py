@@ -2,7 +2,7 @@ import pytest
 import torch
 
 from linna.abstraction import Abstraction
-from tests.toy_network import create_toy_network
+from toy_network import create_toy_network
 
 
 @pytest.fixture

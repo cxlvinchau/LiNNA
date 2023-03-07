@@ -3,7 +3,7 @@ import unittest
 import torch
 
 from linna.basis_finder import VarianceBasisFinder, GreedyBasisFinder, ClusteringBasisFinder, GreedyPruningBasisFinder
-from tests.toy_network import create_toy_network
+from toy_network import create_toy_network
 
 
 class TestBasisFinder(unittest.TestCase):
