@@ -10,6 +10,16 @@ import numpy as np
 
 from scipy.optimize import linprog
 import sympy
+import warnings
+
+GUROBI_AVAILABLE = False
+try:
+    import gurobipy as gb
+    from gurobipy import GRB
+    GUROBI_AVAILABLE = True
+except ImportError:
+    warnings.warn("gurobipy could not be imported. Use the L1 coefficient finder with the scipy solver.")
+
 
 class _CoefFinder(abc.ABC):
     """Reduction base class"""
@@ -64,8 +74,6 @@ class _CoefFinder(abc.ABC):
 class L1CoefFinder(_CoefFinder):
 
     def _find_coefficients_gurobi(self, layer_idx: int, neuron: int):
-        import gurobipy as gb
-        from gurobipy import GRB
         io_matrix = self.io_dict[layer_idx][:, self.network.layers[layer_idx].basis]
         with gb.Env(empty=True) as env:
             env.setParam("LogToConsole", 0)
