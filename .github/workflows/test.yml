@@ -1,0 +1,28 @@
+name: Test
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: |
+        pip install -r requirements-dev.txt
+    - name: Build documentation
+      run: |
+        cd docs
+        make clean html
+    - name: Run tests
+      run: |
+        python -m pytest tests --junitxml=junit/test-results.xml
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: pytest-results
+        path: junit/test-results.xml
