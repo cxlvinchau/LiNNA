@@ -1,7 +1,9 @@
 from typing import Literal, Dict, Any, Optional
+from pydantic import confloat
 
 import numpy as np
 import torch
+from math import ceil
 
 from linna.basis_finder import GreedyBasisFinder, VarianceBasisFinder, ClusteringBasisFinder, RandomBasisFinder, \
     GreedyPruningBasisFinder
@@ -10,7 +12,7 @@ from linna.network import Network
 
 from torch.utils.data.dataloader import DataLoader
 
-BASIS_FINDER = Literal["greedy", "variance", "kmeans", "dbscan", "random"]
+BASIS_FINDER = Literal["greedy", "greedy_pruning", "variance", "kmeans", "dbscan", "random"]
 COEF_FINDER = Literal["l1", "l2", "kmeans", "clustering", "dummy"]
 
 
@@ -86,6 +88,19 @@ class Abstraction:
     def get_reduction_rate(self):
         return 1 - (self.network.get_num_neurons()/self.original_number_of_neurons)
 
+    def determine_bases(self, reduction_rate: confloat(ge=0.0, le=1.0)):
+        assert(0 <= reduction_rate <= 1)
+        bases = self.basis_finder.find_bases(reduction_rate=reduction_rate)
+        if bases is None:
+            return
+        for layer_idx in range(len(self.network.layers)-1):
+            self.network.set_basis(layer_idx, bases[layer_idx])
+
+    def determine_basis_rr(self, layer_idx: int, reduction_rate: float):
+        n = len(self.network.layers[layer_idx].active_neurons)
+        basis_size = ceil(n*reduction_rate)
+        self.determine_basis(layer_idx, basis_size)
+
     def determine_basis(self, layer_idx: int, basis_size: int = 1000):
         """
         Determines the basis for the given layer
@@ -100,6 +115,11 @@ class Abstraction:
         """
         basis = self.basis_finder.find_basis(layer_idx=layer_idx, basis_size=basis_size)
         self.network.set_basis(layer_idx, basis)
+
+
+    def abstract_all(self, **coef_params):
+        for layer_idx in range(len(self.network.layers)-1):
+            self.abstract(layer_idx, **coef_params)
 
     def abstract(self, layer_idx: int, **coef_params):
         """
@@ -119,6 +139,7 @@ class Abstraction:
         for neuron in non_basic:
             self.network.delete_neuron(layer_idx=layer_idx, neuron=neuron)
             self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=coefs[neuron])
+        self.network.update_torch_model()
 
     def refine(self, cex: torch.Tensor):
         """

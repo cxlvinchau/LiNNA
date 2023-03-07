@@ -216,6 +216,11 @@ class Network:
             fileName=filename
         )
 
+    def update_torch_model(self):
+        for layer_idx in self.torch_model._modules:
+            if type(self.torch_model._modules[layer_idx]) == torch.nn.Linear:
+                self.torch_model._modules[layer_idx].in_features = self.torch_model._modules[layer_idx].weight.shape[1]
+                self.torch_model._modules[layer_idx].out_features = self.torch_model._modules[layer_idx].weight.shape[0]
 
 class NetworkLayer:
 
@@ -408,7 +413,7 @@ class NetworkLayer:
         self.neuron_to_coef[neuron] = coef
         with torch.no_grad():
             diag = torch.diag(self.original_weight[:, neuron])
-            mat = torch.tensor(coef.clone().detach()).repeat(diag.shape[1], 1)
+            mat = coef.clone().detach().repeat(diag.shape[1], 1)
             weight = self.get_weight()
             idxs = self._get_input_index(self.input_basis)
             change = torch.matmul(diag.float(), mat.float()).float()

@@ -9,5 +9,8 @@ setup(
     description="Python library for abstracting feed-forward neural networks",
     author="Calvin Chau, Stefanie Mohr, Jan Křetı́nský",
     author_email="calvin.chau@tum.de",
-    install_requires=requirements
+    install_requires=requirements,
+    packages=['linna'],
+    entry_points={
+        'console_scripts': ['linna=linna.main:main']}
 )

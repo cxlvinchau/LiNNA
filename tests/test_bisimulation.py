@@ -3,7 +3,7 @@ import torch
 import numpy as np
 
 from linna.bisimulation import Bisimulation
-from tests.toy_network import create_toy_network
+from toy_network import create_toy_network
 
 
 @pytest.fixture
