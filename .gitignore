@@ -1,3 +1,4 @@
+marabou_venv
 venv
 .idea
 /**/*.pyc
@@ -5,3 +6,4 @@ venv
 tests/.pytest_cache
 docs/_autosummary
 docs/_build
+experiments/networks/atva_networks

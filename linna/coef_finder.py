@@ -79,7 +79,7 @@ class L1CoefFinder(_CoefFinder):
             env.setParam("LogToConsole", 0)
             env.start()
             with gb.Model(env=env) as grb_model:
-                io_vars = grb_model.addMVar(io_matrix.shape[1], lb=float("-inf"), name="io_vars")
+                io_vars = grb_model.addMVar(io_matrix.shape[1], lb=-GRB.INFINITY, name="io_vars")
                 pos_slack = grb_model.addMVar(io_matrix.shape[0], lb=0, name="pos_slack")
                 neg_slack = grb_model.addMVar(io_matrix.shape[0], lb=0, name="neg_slack")
                 target = self.io_dict[layer_idx][:, neuron]
@@ -145,13 +145,13 @@ class L2CoefFinder(_CoefFinder):
     def find_all_coefficients(self, layer_idx: int, **parameters) -> Dict[int, torch.Tensor]:
         io_matrix = self.io_dict[layer_idx]
         basis = self.network.layers[layer_idx].basis
-        #_, not_ignore = sympy.Matrix(io_matrix).T.rref()
-        non_zero_basis = [neuron for neuron in basis]# if neuron in not_ignore]
+        # fixme: numerical stability is hardcoded
+        non_zero_basis = [neuron for neuron in basis if np.any(np.abs(io_matrix[:, neuron]) > 1e-8)]
         non_basic = [neuron for neuron in self.network.layers[layer_idx].neurons if neuron not in basis]
         A = io_matrix[:, non_zero_basis]
         X = torch.Tensor(np.matmul(np.linalg.inv(np.matmul(A.T, A)), np.matmul(A.T, io_matrix[:, non_basic])))
         coefs = {neuron: torch.zeros(len(basis)) for idx, neuron in enumerate(non_basic)}
-        non_zeros_indices = [idx for idx, neuron in enumerate(basis)]# if neuron in not_ignore]
+        non_zeros_indices = [idx for idx, neuron in enumerate(basis) if neuron in non_zero_basis]
         for idx, neuron in enumerate(non_basic):
             coefs[neuron][non_zeros_indices] = X[:, idx]
         return coefs

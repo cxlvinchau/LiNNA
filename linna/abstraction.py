@@ -88,9 +88,9 @@ class Abstraction:
     def get_reduction_rate(self):
         return 1 - (self.network.get_num_neurons()/self.original_number_of_neurons)
 
-    def determine_bases(self, reduction_rate: confloat(ge=0.0, le=1.0)):
+    def determine_bases(self, reduction_rate: confloat(ge=0.0, le=1.0), **kwargs):
         assert(0 <= reduction_rate <= 1)
-        bases = self.basis_finder.find_bases(reduction_rate=reduction_rate)
+        bases = self.basis_finder.find_bases(reduction_rate=reduction_rate, **kwargs)
         if bases is None:
             return
         for layer_idx in range(len(self.network.layers)-1):
@@ -135,7 +135,7 @@ class Abstraction:
         if basis is None:
             raise ValueError(f"Basis has not been determined for {layer_idx} yet")
         non_basic = [i for i in self.network.layers[layer_idx].active_neurons if i not in basis]
-        coefs = self.coef_finder.find_all_coefficients(layer_idx=layer_idx, **coef_params)
+        coefs = self.coef_finder.find_all_coefficients(layer_idx=layer_idx)
         for neuron in non_basic:
             self.network.delete_neuron(layer_idx=layer_idx, neuron=neuron)
             self.network.readjust_weights(layer_idx=layer_idx, neuron=neuron, coef=coefs[neuron])

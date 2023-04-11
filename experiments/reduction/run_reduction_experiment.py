@@ -61,12 +61,13 @@ def run_bisimulation(testset: Dataset, network_path: str):
 
 
 def run_reduction_experiment(network: str, trainset: Dataset, testset: Dataset,
-                             basis_finder: str, coef_finder: str, coef_params: Dict[str, Any] = None, resolution=10):
+                             basis_finder: str, coef_finder: str, coef_params: Dict[str, Any] = None, resolution=10, atva_network=False, global_basis_finding=True):
     """
     Runs the reduction experiment
 
     Parameters
     ----------
+    global_basis_finding
     network: str
         Path to network
     trainset: Dataset
@@ -94,24 +95,33 @@ def run_reduction_experiment(network: str, trainset: Dataset, testset: Dataset,
     testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=True)
 
     # Load trained neural network
-    sequential = load_tf_network(file=network)
+    if atva_network:
+        sequential = torch.load(network, map_location=torch.device('cpu'))
+    else:
+        sequential = load_tf_network(file=network)
+    network_name = network
     network = Network(torch_model=sequential)
 
     rows = []
 
     # Compute different abstractions
     for rr in np.linspace(0, 1, num=resolution + 2)[1:-1]:
+        print(f"{network_name} | {basis_finder} | {coef_finder} | {rr}")
         start = timer()
         abstraction = Abstraction(network=network,
                                   basis_finder=basis_finder,
                                   coef_finder=coef_finder,
                                   coef_params=coef_params,
                                   loader=trainloader)
-        for layer_idx in range(len(abstraction.network.layers) - 1):
-            basis_size = int(len(abstraction.network.layers[layer_idx].neurons) * rr)
-            abstraction.determine_basis(layer_idx=layer_idx, basis_size=basis_size)
-        for layer_idx in range(len(abstraction.network.layers) - 1):
-            abstraction.abstract(layer_idx=layer_idx)
+        if global_basis_finding:
+            abstraction.determine_bases(rr, random_choice=True)
+            abstraction.abstract_all(coef_params=coef_params)
+        else:
+            for layer_idx in range(len(abstraction.network.layers) - 1):
+                basis_size = int(len(abstraction.network.layers[layer_idx].neurons) * rr)
+                abstraction.determine_basis(layer_idx=layer_idx, basis_size=basis_size)
+            for layer_idx in range(len(abstraction.network.layers) - 1):
+                abstraction.abstract(layer_idx=layer_idx)
         end = timer()
         row = pd.Series({"reduction_rate": abstraction.get_reduction_rate(),
                          "accuracy": get_accuracy(testloader, abstraction.network.torch_model),
