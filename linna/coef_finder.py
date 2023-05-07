@@ -9,7 +9,6 @@ from scipy.sparse import identity, hstack, coo_matrix, lil_matrix
 import numpy as np
 
 from scipy.optimize import linprog
-import sympy
 import warnings
 
 GUROBI_AVAILABLE = False
