@@ -24,7 +24,7 @@ class TestBisimulation:
         for layer in range(len(network.layers)):
             io_dict[layer]: np.ndarray = network.get_io_matrix(loader=loader, layer_idx=layer, size=4)
 
-        bisim = Bisimulation(network=network, loader=loader, io_dict=io_dict)
+        bisim = Bisimulation(network=network, io_dict=io_dict)
 
         bisim.process_all_layers(delta=10)
 

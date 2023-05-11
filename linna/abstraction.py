@@ -1,5 +1,4 @@
 from typing import Literal, Dict, Any, Optional
-from pydantic import confloat
 
 import numpy as np
 import torch
@@ -88,8 +87,10 @@ class Abstraction:
     def get_reduction_rate(self):
         return 1 - (self.network.get_num_neurons()/self.original_number_of_neurons)
 
-    def determine_bases(self, reduction_rate: confloat(ge=0.0, le=1.0), **kwargs):
-        assert(0 <= reduction_rate <= 1)
+    def determine_bases(self, reduction_rate, **kwargs):
+        if reduction_rate < 0 or reduction_rate > 1:
+            raise ValueError(f'Reduction rate {reduction_rate} is invalid. The reduction rate has to be a value'
+                             f'between 0 and 1.')
         bases = self.basis_finder.find_bases(reduction_rate=reduction_rate, **kwargs)
         if bases is None:
             return

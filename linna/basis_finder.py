@@ -53,7 +53,7 @@ class _BasisFinder(abc.ABC):
 
         Parameters
         ----------
-        reduction_rate: int
+        reduction_rate: float
             Reduction rate
 
         Returns
