@@ -12,6 +12,14 @@ and the previously proposed **DeepAbstract** (see Publications for details).
 
 For more information, we refer to the [LiNNA website]().
 
+Getting Started
+---------------
+
+You can install LiNNA by running `python setup.py install`. 
+Please note that it will install Pytorch with CUDA as default. If you don't have a GPU, please run `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu` first.
+
+If you want to use the L2-coefficient-finder, please also install Gurobi (e.g. `pip3 install gurobipy`) and make sure you have an active license ([Gurobi](https://www.gurobi.com/academia/academic-program-and-licenses/)).
+
 Citing LiNNA
 ------------
 

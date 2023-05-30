@@ -2,3 +2,9 @@ torch
 torchaudio
 torchvision
 scipy
+scikit-learn
+pydantic==1.10.8
+pydantic_core==0.30.0
+typing-extensions>=4.5.0
+annotated-types>=0.4.0
+
