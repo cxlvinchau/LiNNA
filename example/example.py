@@ -13,12 +13,12 @@ import os
 
 # Load MNIST dataset
 # Set to true to download MNIST data set
-DOWNLOAD = not os.path.isdir('../datasets/MNIST/TRAINSET')
+DOWNLOAD = not os.path.isdir('../data/MNIST/TRAINSET')
 
 # Get the data data
 transform = transforms.Compose([transforms.ToTensor()])
-trainset = datasets.MNIST('../datasets/MNIST/TRAINSET', download=DOWNLOAD, train=True, transform=transform)
-testset = datasets.MNIST('../datasets/MNIST/TESTSET', download=DOWNLOAD, train=False, transform=transform)
+trainset = datasets.MNIST('../data/MNIST/TRAINSET', download=DOWNLOAD, train=True, transform=transform)
+testset = datasets.MNIST('../data/MNIST/TESTSET', download=DOWNLOAD, train=False, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=False)
 testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False)
 

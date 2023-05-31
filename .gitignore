@@ -7,3 +7,7 @@ tests/.pytest_cache
 docs/_autosummary
 docs/_build
 experiments/networks/atva_networks
+build/
+dist/
+data/
+linna.egg-info/

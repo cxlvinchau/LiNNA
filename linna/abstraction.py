@@ -14,7 +14,7 @@ from torch.utils.data.dataloader import DataLoader
 BASIS_FINDER = Literal["greedy", "greedy_pruning", "variance", "kmeans", "dbscan", "random"]
 COEF_FINDER = Literal["l1", "l2", "kmeans", "clustering", "dummy"]
 
-
+# This class contains the key parts for generating an abstraction.
 class Abstraction:
 
     def __init__(self, network: Network, basis_finder: BASIS_FINDER, coef_finder: COEF_FINDER, syntactic=False, loader: DataLoader = None,
@@ -70,7 +70,7 @@ class Abstraction:
         elif basis_finder == "random":
             self.basis_finder = RandomBasisFinder(network=network, io_dict=self.io_dict)
         else:
-            raise ValueError(f"Invalid basis finder {str(basis_finder)}")
+            raise ValueError(f"Invalid basis finder {str(basis_finder)}. We support [greedy, greedy_pruning, variance, kmeans, dbsacn, random].")
 
         # Initialize coef finder
         if coef_finder == "l1":
@@ -82,12 +82,23 @@ class Abstraction:
         elif coef_finder == "dummy":
             self.coef_finder = DummyCoefFinder(network=network, io_dict=self.io_dict)
         else:
-            raise ValueError(f"Invalid coef finder {str(coef_finder)}")
+            raise ValueError(f"Invalid coef finder {str(coef_finder)}. We support [l1, l2, clustering, dummy]")
 
     def get_reduction_rate(self):
+        """
+        Computes the reduction rate after performing the abstraction
+        """
         return 1 - (self.network.get_num_neurons()/self.original_number_of_neurons)
 
     def determine_bases(self, reduction_rate, **kwargs):
+        """
+        Computes the basis of the network for a given reduction rate
+
+        Parameters
+        ----------
+        reduction_rate: float
+            The ratio that should be removed from the network
+        """
         if reduction_rate < 0 or reduction_rate > 1:
             raise ValueError(f'Reduction rate {reduction_rate} is invalid. The reduction rate has to be a value'
                              f'between 0 and 1.')
@@ -98,6 +109,19 @@ class Abstraction:
             self.network.set_basis(layer_idx, bases[layer_idx])
 
     def determine_basis_rr(self, layer_idx: int, reduction_rate: float):
+        """
+        Compute the basis of the network for a given layer and a given reduction_rate
+
+        Parameters
+        ----------
+        layer_idx: int
+            Layer for which the basis should be computed
+        reduction_rate: float
+            Percentage of neurons that should be removed
+        """
+        if reduction_rate < 0 or reduction_rate > 1:
+            raise ValueError(f'Reduction rate {reduction_rate} is invalid. The reduction rate has to be a value'
+                             f'between 0 and 1.')
         n = len(self.network.layers[layer_idx].active_neurons)
         basis_size = ceil(n*reduction_rate)
         self.determine_basis(layer_idx, basis_size)
@@ -119,6 +143,10 @@ class Abstraction:
 
 
     def abstract_all(self, **coef_params):
+        """
+        Abstracts all layers in the network
+
+        """
         for layer_idx in range(len(self.network.layers)-1):
             self.abstract(layer_idx, **coef_params)
 
