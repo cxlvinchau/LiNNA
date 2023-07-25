@@ -107,13 +107,13 @@ Citing LiNNA
 Authors
 -------
 *LiNNA* is developed and maintained by [Calvin Chau](https://calvin-chau.com), [Stefanie Mohr](https://www7.in.tum.de/~mohr/) and [Jan Křetı́nský](https://www7.in.tum.de/~kretinsk/)
-at the [Technische Universität Dresden](https://tu-dresden.de) and [Technical University of Munich](https://www.in.tum.de/en/in/cover-page/).
+at the [Technische Universität Dresden](https://tu-dresden.de), [Technical University of Munich](https://www.in.tum.de/en/in/cover-page/) and [Masaryk University](https://www.muni.cz/en).
 
 Publications
 ------------
 > **Syntactic vs Semantic Linear Abstraction and Refinement of Neural Networks**
 > <br>*Calvin Chau, Jan Křetínský, and Stefanie Mohr*
-> ([Paper](https://link.springer.com/chapter/10.1007/978-3-030-59152-6_5), accepted at ATVA 2023)
+> ([Paper](https://arxiv.org/abs/2307.10891v1), accepted at ATVA 2023)
 
 >**DeepAbstract: Neural Network Abstraction for Accelerating Verification**
 > <br>*Pranav Ashok, Vahid Hashemi, Jan Křetínský, and Stefanie Mohr*
